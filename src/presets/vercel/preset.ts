@@ -28,6 +28,9 @@ export const vercelPreset = (options: VercelPresetOptions): Preset => {
           const clientBuildPath = join(reactRouterConfig.buildDirectory, "client");
           const serverBuildPath = join(reactRouterConfig.buildDirectory, "server");
 
+          const buildDir = relative(rootPath, reactRouterConfig.buildDirectory);
+          const assetsDir = viteConfig.build.assetsDir ?? "assets";
+
           const ssrExternal = viteConfig.ssr.external;
 
           const serverBundles = buildManifest?.serverBundles ?? {
@@ -44,7 +47,7 @@ export const vercelPreset = (options: VercelPresetOptions): Preset => {
           await mkdir(vercelOutput, { recursive: true });
 
           await copyStaticFiles(clientBuildPath, vercelOutput);
-          await writeVercelConfigJson(viteConfig.build.assetsDir, buildManifest, join(vercelOutput, "config.json"));
+          await writeVercelConfigJson(assetsDir, buildManifest, join(vercelOutput, "config.json"));
 
           for (const key in serverBundles) {
             const serverBundleId = serverBundles[key].id;
@@ -56,6 +59,8 @@ export const vercelPreset = (options: VercelPresetOptions): Preset => {
               options?.entryFile ?? "server.ts",
               buildPath,
               buildFile,
+              buildDir,
+              assetsDir,
               serverBundleId,
               join(rootPath, "package.json"),
               ssrExternal,

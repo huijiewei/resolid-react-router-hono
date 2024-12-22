@@ -62,10 +62,10 @@ export const createHonoNodeServer = async <E extends Env = BlankEnv>(options: Ho
   const server = await createHonoServer(mode, {
     configure: async (server) => {
       if (isProduction) {
-        const clientBuildPath = `${import.meta.env.RRR_HONO_SERVER_BUILD_DIRECTORY}/client`;
+        const clientBuildPath = `${import.meta.env.RESOLID_BUILD_DIR}/client`;
 
         server.use(
-          `/${import.meta.env.RRR_HONO_SERVER_ASSETS_DIR}/*`,
+          `/${import.meta.env.RESOLID_ASSETS_DIR}/*`,
           cache(60 * 60 * 24 * 365, true),
           serveStatic({ root: clientBuildPath }),
         );
