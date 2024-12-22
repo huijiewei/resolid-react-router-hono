@@ -13,7 +13,15 @@ type ReactRouterHonoServerOptions = {
 
 const defaultConfig: Required<ReactRouterHonoServerOptions> = {
   entryFile: "server.ts",
-  exclude: [/.*\.css$/, /^\/@.+$/, /^\/favicon\.ico$/, /^\/assets\/.+/, /^\/static\/.+/, /^\/node_modules\/.*/],
+  exclude: [
+    /.*\.css$/,
+    /^\/@.+$/,
+    /\?import$/,
+    /^\/favicon\.ico$/,
+    /^\/assets\/.+/,
+    /^\/static\/.+/,
+    /^\/node_modules\/.*/,
+  ],
 };
 
 type ReactRouterPluginContext = {
@@ -47,15 +55,15 @@ export const reactRouterHonoServer = (config?: ReactRouterHonoServerOptions): Vi
 
       const reactRouterConfig = config.__reactRouterPluginContext as ReactRouterPluginContext;
       const rootDirectory = reactRouterConfig.rootDirectory;
+      const buildDir = relative(rootDirectory, reactRouterConfig.reactRouterConfig.buildDirectory);
       const assetsDir = config.build?.assetsDir || "assets";
-      const buildDirectory = relative(rootDirectory, reactRouterConfig.reactRouterConfig.buildDirectory);
 
       appDirectory = relative(rootDirectory, reactRouterConfig.reactRouterConfig.appDirectory);
 
       return {
         define: {
-          "import.meta.env.RRR_HONO_SERVER_BUILD_DIRECTORY": JSON.stringify(buildDirectory),
-          "import.meta.env.RRR_HONO_SERVER_ASSETS_DIR": JSON.stringify(assetsDir),
+          "import.meta.env.RESOLID_BUILD_DIR": JSON.stringify(buildDir),
+          "import.meta.env.RESOLID_ASSETS_DIR": JSON.stringify(assetsDir),
         },
         ssr: {
           noExternal: ["@resolid/react-router-hono"],
@@ -66,6 +74,8 @@ export const reactRouterHonoServer = (config?: ReactRouterHonoServerOptions): Vi
       publicDirPath = config.publicDir;
     },
     async configureServer(server) {
+      const mergedExclude = [`/${appDirectory}/**/*`, `/${appDirectory}/**/.*/**`, ...mergedConfig.exclude];
+
       async function createMiddleware(server: ViteDevServer): Promise<Connect.HandleFunction> {
         return async (
           req: http.IncomingMessage,
@@ -82,7 +92,7 @@ export const reactRouterHonoServer = (config?: ReactRouterHonoServerOptions): Vi
             } catch {}
           }
 
-          for (const pattern of mergedConfig.exclude) {
+          for (const pattern of mergedExclude) {
             if (req.url) {
               if (pattern instanceof RegExp) {
                 if (pattern.test(req.url)) {

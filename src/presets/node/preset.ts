@@ -19,6 +19,9 @@ export const nodePreset = (options?: NodePresetOptions): Preset => {
           const serverBuildFile = reactRouterConfig.serverBuildFile;
           const serverBuildPath = join(reactRouterConfig.buildDirectory, "server");
 
+          const buildDir = relative(rootPath, reactRouterConfig.buildDirectory);
+          const assetsDir = viteConfig.build.assetsDir ?? "assets";
+
           const ssrExternal = viteConfig.ssr.external;
 
           const serverBundles = buildManifest?.serverBundles ?? {
@@ -35,6 +38,8 @@ export const nodePreset = (options?: NodePresetOptions): Preset => {
               options?.entryFile ?? "server.ts",
               buildPath,
               buildFile,
+              buildDir,
+              assetsDir,
               serverBundleId,
               join(rootPath, "package.json"),
               ssrExternal,

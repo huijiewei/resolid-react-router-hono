@@ -1,6 +1,6 @@
 interface ReactRouterHonoServerEnv {
-  readonly RRR_HONO_SERVER_BUILD_DIRECTORY: string;
-  readonly RRR_HONO_SERVER_ASSETS_DIR: string;
+  readonly RESOLID_BUILD_DIR: string;
+  readonly RESOLID_ASSETS_DIR: string;
 }
 
 interface ImportMetaEnv extends ReactRouterHonoServerEnv {}

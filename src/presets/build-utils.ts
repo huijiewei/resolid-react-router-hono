@@ -45,6 +45,8 @@ export const buildEntry = async (
   entryFile: string,
   buildPath: string,
   buildFile: string,
+  buildDir: string,
+  assetsDir: string,
   serverBundleId: string,
   packageFile: string,
   ssrExternal: string[] | true | undefined,
@@ -68,6 +70,8 @@ export const buildEntry = async (
       },
       define: {
         "process.env.NODE_ENV": "'production'",
+        "import.meta.env.RESOLID_BUILD_DIR": `'${buildDir}'`,
+        "import.meta.env.RESOLID_ASSETS_DIR": `'${assetsDir}'`,
       },
       banner: { js: "import { createRequire } from 'module';const require = createRequire(import.meta.url);" },
       platform: "node",
