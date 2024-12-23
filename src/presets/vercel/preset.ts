@@ -2,19 +2,19 @@ import type { BuildManifest, Preset } from "@react-router/dev/config";
 import { nodeFileTrace } from "@vercel/nft";
 import { cp, mkdir, readdir, realpath, rm, writeFile } from "node:fs/promises";
 import { basename, dirname, join, relative } from "node:path";
-import { buildEntry } from "../build-utils";
-
-type VercelRuntime = 20 | 22;
+import { buildEntry, type NodeVersion } from "../build-utils";
 
 export type VercelPresetOptions = {
-  runtime: VercelRuntime;
   regions: string[];
   copyParentModules?: string[];
   entryFile?: string;
+  nodeVersion?: NodeVersion;
 };
 
 // noinspection JSUnusedGlobalSymbols
 export const vercelPreset = (options: VercelPresetOptions): Preset => {
+  const nodeVersion = options.nodeVersion ?? 22;
+
   // noinspection JSUnusedGlobalSymbols
   return {
     name: "@resolid/react-router-hono-vercel-preset",
@@ -64,6 +64,7 @@ export const vercelPreset = (options: VercelPresetOptions): Preset => {
               serverBundleId,
               join(rootPath, "package.json"),
               ssrExternal,
+              nodeVersion,
             );
 
             await copyFunctionsFiles(
@@ -73,7 +74,7 @@ export const vercelPreset = (options: VercelPresetOptions): Preset => {
               serverBuildFile,
               bundleFile,
               `_${serverBundleId}`,
-              options.runtime,
+              nodeVersion,
               options.regions,
               options.copyParentModules ?? [],
             );
@@ -91,7 +92,7 @@ const copyFunctionsFiles = async (
   serverBuildFile: string,
   bundleFile: string,
   functionName: string,
-  functionRuntime: VercelRuntime,
+  functionRuntime: NodeVersion,
   functionRegions: string[],
   copyParentModules: string[],
 ) => {

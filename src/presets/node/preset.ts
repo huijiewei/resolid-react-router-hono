@@ -1,13 +1,16 @@
 import type { Preset } from "@react-router/dev/config";
 import { dirname, join, relative } from "node:path";
-import { buildEntry } from "../build-utils";
+import { buildEntry, type NodeVersion } from "../build-utils";
 
 export type NodePresetOptions = {
   entryFile?: string;
+  nodeVersion?: NodeVersion;
 };
 
 // noinspection JSUnusedGlobalSymbols
 export const nodePreset = (options?: NodePresetOptions): Preset => {
+  const nodeVersion = options?.nodeVersion ?? 22;
+
   // noinspection JSUnusedGlobalSymbols
   return {
     name: "@resolid/react-router-hono-node-preset",
@@ -43,6 +46,7 @@ export const nodePreset = (options?: NodePresetOptions): Preset => {
               serverBundleId,
               join(rootPath, "package.json"),
               ssrExternal,
+              nodeVersion,
             );
           }
         },
