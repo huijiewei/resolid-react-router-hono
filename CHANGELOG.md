@@ -1,5 +1,11 @@
 # @resolid/react-router-hono
 
+## 1.1.0
+
+### Minor Changes
+
+- 7622c22: add node version option
+
 ## 1.0.1
 
 ### Patch Changes
