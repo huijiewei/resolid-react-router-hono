@@ -5,6 +5,8 @@ import { exit } from "node:process";
 import type { PackageJson } from "type-fest";
 import type { ResolvedConfig } from "vite";
 
+export type NodeVersion = 20 | 22;
+
 export type SsrExternal = ResolvedConfig["ssr"]["external"];
 
 const getPackageDependencies = (dependencies: Record<string, string | undefined>, ssrExternal: SsrExternal) => {
@@ -27,7 +29,12 @@ const getPackageDependencies = (dependencies: Record<string, string | undefined>
     }, {});
 };
 
-const writePackageJson = async (pkg: PackageJson, outputFile: string, dependencies: unknown) => {
+const writePackageJson = async (
+  pkg: PackageJson,
+  outputFile: string,
+  dependencies: unknown,
+  nodeVersion: NodeVersion,
+) => {
   const distPkg = {
     name: pkg.name,
     type: pkg.type,
@@ -35,6 +42,9 @@ const writePackageJson = async (pkg: PackageJson, outputFile: string, dependenci
       postinstall: pkg.scripts?.postinstall ?? "",
     },
     dependencies: dependencies,
+    engines: {
+      node: `${nodeVersion}.x`,
+    },
   };
 
   await writeFile(outputFile, JSON.stringify(distPkg, null, 2), "utf8");
@@ -50,6 +60,7 @@ export const buildEntry = async (
   serverBundleId: string,
   packageFile: string,
   ssrExternal: string[] | true | undefined,
+  nodeVersion: NodeVersion,
 ): Promise<string> => {
   console.log(`Bundle Server file for ${serverBundleId}...`);
 
@@ -57,7 +68,7 @@ export const buildEntry = async (
 
   const packageDependencies = getPackageDependencies({ ...pkg.dependencies }, ssrExternal);
 
-  await writePackageJson(pkg, join(buildPath, "package.json"), packageDependencies);
+  await writePackageJson(pkg, join(buildPath, "package.json"), packageDependencies, nodeVersion);
 
   const bundleFile = join(buildPath, "server.mjs");
 
@@ -73,9 +84,9 @@ export const buildEntry = async (
         "import.meta.env.RESOLID_BUILD_DIR": `'${buildDir}'`,
         "import.meta.env.RESOLID_ASSETS_DIR": `'${assetsDir}'`,
       },
-      banner: { js: "import { createRequire } from 'module';const require = createRequire(import.meta.url);" },
+      //banner: { js: "import { createRequire } from 'module';const require = createRequire(import.meta.url);" },
       platform: "node",
-      target: "node20",
+      target: `node${nodeVersion}`,
       format: "esm",
       external: ["vite", ...Object.keys(packageDependencies)],
       bundle: true,

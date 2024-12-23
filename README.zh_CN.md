@@ -73,6 +73,7 @@ export default {
     nodePreset({
       // 入口文件
       entryFile: "server.node.ts", // 默认为 server.ts
+      nodeVersion: 22, // 默认为 22
     }),
   ],
 } satisfies Config;
@@ -109,11 +110,12 @@ export default {
   presets: [
     vercelPreset({
       // 部署区域
-      regions: "sin1",
+      regions: ["sin1"],
       // 有些包会根据不同平台引入二进制包, 安装的时候二进制包不在同一目录, 比如 @node-rs/bcrypt
       copyParentModules: ["@node-rs/bcrypt"],
       // 入口文件
       entryFile: "server.vercel.ts", // 默认为 server.ts
+      nodeVersion: 22, // 默认为 22
     }),
   ],
 } satisfies Config;
