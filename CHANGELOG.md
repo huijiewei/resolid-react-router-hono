@@ -1,5 +1,11 @@
 # @resolid/react-router-hono
 
+## 1.1.1
+
+### Patch Changes
+
+- de191f7: fix build utils
+
 ## 1.1.0
 
 ### Minor Changes
