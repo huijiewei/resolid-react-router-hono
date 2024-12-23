@@ -84,7 +84,7 @@ export const buildEntry = async (
         "import.meta.env.RESOLID_BUILD_DIR": `'${buildDir}'`,
         "import.meta.env.RESOLID_ASSETS_DIR": `'${assetsDir}'`,
       },
-      //banner: { js: "import { createRequire } from 'module';const require = createRequire(import.meta.url);" },
+      banner: { js: "import { createRequire } from 'module';const require = createRequire(import.meta.url);" },
       platform: "node",
       target: `node${nodeVersion}`,
       format: "esm",
