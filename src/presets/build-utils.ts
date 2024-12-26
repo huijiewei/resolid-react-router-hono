@@ -11,7 +11,19 @@ export type SsrExternal = ResolvedConfig["ssr"]["external"];
 
 const getPackageDependencies = (dependencies: Record<string, string | undefined>, ssrExternal: SsrExternal) => {
   const ssrExternalFiltered = Array.isArray(ssrExternal)
-    ? ssrExternal.filter((id) => !id.startsWith("@remix-run"))
+    ? ssrExternal.filter(
+        (id) =>
+          ![
+            "react-router",
+            "react-router-dom",
+            "@react-router/architect",
+            "@react-router/cloudflare",
+            "@react-router/dev",
+            "@react-router/express",
+            "@react-router/node",
+            "@react-router/serve",
+          ].includes(id),
+      )
     : ssrExternal;
 
   return Object.keys(dependencies)

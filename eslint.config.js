@@ -1,4 +1,4 @@
-import eslintBase from "@resolid/config/eslint.base";
 import eslintNode from "@resolid/config/eslint.node";
+import eslintTypescript from "@resolid/config/eslint.typescript";
 
-export default [...eslintBase, ...eslintNode];
+export default [...eslintTypescript, ...eslintNode];
