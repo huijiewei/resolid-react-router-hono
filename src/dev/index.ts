@@ -39,6 +39,7 @@ type Fetch = (
 
 type LoadModule = (server: ViteDevServer, entry: string) => Promise<{ fetch: Fetch }>;
 
+// noinspection JSUnusedGlobalSymbols
 export const reactRouterHonoServer = (config?: ReactRouterHonoServerOptions): VitePlugin => {
   const mergedConfig = { ...defaultConfig, ...config };
 
@@ -89,7 +90,9 @@ export const reactRouterHonoServer = (config?: ReactRouterHonoServerOptions): Vi
               if (existsSync(filePath) && statSync(filePath).isFile()) {
                 return next();
               }
-            } catch {}
+            } catch {
+              // do nothing
+            }
           }
 
           for (const pattern of mergedExclude) {
