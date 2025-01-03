@@ -51,9 +51,9 @@
   },
   "dependencies": {
     "@hono/node-server": "^1.13.7",
-    "@vercel/nft": "^0.27.10",
+    "@vercel/nft": "^0.29.0",
     "esbuild": "^0.24.2",
-    "hono": "^4.6.14",
+    "hono": "^4.6.15",
     "minimatch": "^10.0.1"
   },
   "devDependencies": {
@@ -62,10 +62,10 @@
     "@changesets/cli": "^2.27.11",
     "@commitlint/cli": "^19.6.1",
     "@commitlint/config-conventional": "^19.6.0",
-    "@resolid/config": "^3.1.0",
-    "@types/node": "^20.17.10",
+    "@resolid/config": "^3.1.1",
+    "@types/node": "^20.17.11",
     "eslint": "^9.17.0",
-    "lefthook": "^1.10.0",
+    "lefthook": "^1.10.1",
     "prettier": "^3.4.2",
     "tsup": "^8.3.5",
     "type-fest": "^4.31.0",
@@ -75,12 +75,12 @@
   "peerDependencies": {
     "@react-router/dev": "^7.1.1",
     "react-router": "^7.1.1",
-    "vite": "^6.0.6"
+    "vite": "^6.0.7"
   },
   "engines": {
     "node": ">=20.0.0"
   },
-  "packageManager": "pnpm@9.15.1",
+  "packageManager": "pnpm@9.15.2",
   "homepage": "https://www.resolid.tech",
   "repository": {
     "type": "git",
