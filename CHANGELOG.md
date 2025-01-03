@@ -1,5 +1,11 @@
 # @resolid/react-router-hono
 
+## 1.1.5
+
+### Patch Changes
+
+- [`fd0344a`](https://github.com/huijiewei/resolid-react-router-hono/commit/fd0344a34aad1b1ad4d1caa26126e523b872fbdb) Thanks [@huijiewei](https://github.com/huijiewei)! - fix changeset access config
+
 ## 1.1.4
 
 ### Patch Changes
