@@ -1,5 +1,11 @@
 # @resolid/react-router-hono
 
+## 1.1.6
+
+### Patch Changes
+
+- [`0ab04ea`](https://github.com/huijiewei/resolid-react-router-hono/commit/0ab04ea3d09400283ed167a13dcbecc6e6c00418) Thanks [@huijiewei](https://github.com/huijiewei)! - simplify configuration handling in reactRouterHonoServer
+
 ## 1.1.5
 
 ### Patch Changes
