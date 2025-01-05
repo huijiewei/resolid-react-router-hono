@@ -53,7 +53,7 @@
     "@hono/node-server": "^1.13.7",
     "@vercel/nft": "^0.29.0",
     "esbuild": "^0.24.2",
-    "hono": "^4.6.15",
+    "hono": "^4.6.16",
     "minimatch": "^10.0.1"
   },
   "devDependencies": {
