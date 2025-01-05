@@ -11,19 +11,6 @@ type ReactRouterHonoServerOptions = {
   exclude?: (string | RegExp)[];
 };
 
-const defaultConfig: Required<ReactRouterHonoServerOptions> = {
-  entryFile: "server.ts",
-  exclude: [
-    /.*\.css$/,
-    /^\/@.+$/,
-    /\?import$/,
-    /^\/favicon\.ico$/,
-    /^\/assets\/.+/,
-    /^\/static\/.+/,
-    /^\/node_modules\/.*/,
-  ],
-};
-
 type ReactRouterPluginContext = {
   reactRouterConfig: Required<ReactRouterConfig>;
   rootDirectory: string;
@@ -40,9 +27,7 @@ type Fetch = (
 type LoadModule = (server: ViteDevServer, entry: string) => Promise<{ fetch: Fetch }>;
 
 // noinspection JSUnusedGlobalSymbols
-export const reactRouterHonoServer = (config?: ReactRouterHonoServerOptions): VitePlugin => {
-  const mergedConfig = { ...defaultConfig, ...config };
-
+export const reactRouterHonoServer = (options?: ReactRouterHonoServerOptions): VitePlugin => {
   let publicDirPath = "";
   let appDirectory = "";
 
@@ -75,7 +60,14 @@ export const reactRouterHonoServer = (config?: ReactRouterHonoServerOptions): Vi
       publicDirPath = config.publicDir;
     },
     async configureServer(server) {
-      const mergedExclude = [`/${appDirectory}/**/*`, `/${appDirectory}/**/.*/**`, ...mergedConfig.exclude];
+      const mergedExclude = [
+        /.*\.(ts|js|tsx|jsx|css|svg)(\?.*)?$/,
+        /\?import(\?.*)?$/,
+        /^\/@.+$/,
+        /^\/node_modules\/.*/,
+        `/${appDirectory}/**/.*/**`,
+        ...(options?.exclude ?? []),
+      ];
 
       async function createMiddleware(server: ViteDevServer): Promise<Connect.HandleFunction> {
         return async (
@@ -120,7 +112,7 @@ export const reactRouterHonoServer = (config?: ReactRouterHonoServerOptions): Vi
           let app: { fetch: Fetch };
 
           try {
-            app = await loadModule(server, join(appDirectory, mergedConfig.entryFile));
+            app = await loadModule(server, join(appDirectory, options?.entryFile ?? "server.ts"));
           } catch (e) {
             return next(e);
           }
