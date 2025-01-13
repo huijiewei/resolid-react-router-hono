@@ -26,30 +26,44 @@ type Fetch = (
 
 type LoadModule = (server: ViteDevServer, entry: string) => Promise<{ fetch: Fetch }>;
 
+const resolveReactRouterPluginConfig = (config: UserConfig, options: ReactRouterHonoServerOptions | undefined) => {
+  if (!("__reactRouterPluginContext" in config)) {
+    return null;
+  }
+
+  const reactRouterConfig = config.__reactRouterPluginContext as ReactRouterPluginContext;
+
+  const appDir = relative(reactRouterConfig.rootDirectory, reactRouterConfig.reactRouterConfig.appDirectory);
+
+  return {
+    appDir: appDir,
+    entryFile: join(appDir, options?.entryFile ?? "server.ts"),
+    buildDir: relative(reactRouterConfig.rootDirectory, reactRouterConfig.reactRouterConfig.buildDirectory),
+    assetsDir: config.build?.assetsDir || "assets",
+  };
+};
+
+type ReactRouterPluginConfig = ReturnType<typeof resolveReactRouterPluginConfig>;
+
 // noinspection JSUnusedGlobalSymbols
 export const reactRouterHonoServer = (options?: ReactRouterHonoServerOptions): VitePlugin => {
   let publicDirPath = "";
-  let appDirectory = "";
+  let reactRouterConfig: ReactRouterPluginConfig;
 
   return {
     name: "@resolid/react-router-hono-server",
     enforce: "post",
     config(config) {
-      if (!("__reactRouterPluginContext" in config)) {
-        return null;
+      reactRouterConfig = resolveReactRouterPluginConfig(config, options);
+
+      if (!reactRouterConfig) {
+        return;
       }
-
-      const reactRouterConfig = config.__reactRouterPluginContext as ReactRouterPluginContext;
-      const rootDirectory = reactRouterConfig.rootDirectory;
-      const buildDir = relative(rootDirectory, reactRouterConfig.reactRouterConfig.buildDirectory);
-      const assetsDir = config.build?.assetsDir || "assets";
-
-      appDirectory = relative(rootDirectory, reactRouterConfig.reactRouterConfig.appDirectory);
 
       return {
         define: {
-          "import.meta.env.RESOLID_BUILD_DIR": JSON.stringify(buildDir),
-          "import.meta.env.RESOLID_ASSETS_DIR": JSON.stringify(assetsDir),
+          "import.meta.env.RESOLID_BUILD_DIR": JSON.stringify(reactRouterConfig.buildDir),
+          "import.meta.env.RESOLID_ASSETS_DIR": JSON.stringify(reactRouterConfig.assetsDir),
         },
         ssr: {
           noExternal: ["@resolid/react-router-hono"],
@@ -60,21 +74,22 @@ export const reactRouterHonoServer = (options?: ReactRouterHonoServerOptions): V
       publicDirPath = config.publicDir;
     },
     async configureServer(server) {
+      if (!reactRouterConfig) {
+        return;
+      }
+
       const mergedExclude = [
-        /.*\.(ts|js|tsx|jsx|css|svg)(\?.*)?$/,
+        new RegExp(`^(?=\\/${reactRouterConfig.appDir.replaceAll("/", "")}\\/)((?!.*\\.data(\\?|$)).*\\..*(\\?.*)?$)`),
         /\?import(\?.*)?$/,
         /^\/@.+$/,
         /^\/node_modules\/.*/,
-        `/${appDirectory}/**/.*/**`,
+        `/${reactRouterConfig.appDir}/**/.*/**`,
         ...(options?.exclude ?? []),
       ];
 
-      async function createMiddleware(server: ViteDevServer): Promise<Connect.HandleFunction> {
-        return async (
-          req: http.IncomingMessage,
-          res: http.ServerResponse,
-          next: Connect.NextFunction,
-        ): Promise<void> => {
+      const createMiddleware =
+        async (server: ViteDevServer): Promise<Connect.HandleFunction> =>
+        async (req: http.IncomingMessage, res: http.ServerResponse, next: Connect.NextFunction): Promise<void> => {
           if (req.url) {
             const filePath = join(publicDirPath, req.url);
 
@@ -112,7 +127,7 @@ export const reactRouterHonoServer = (options?: ReactRouterHonoServerOptions): V
           let app: { fetch: Fetch };
 
           try {
-            app = await loadModule(server, join(appDirectory, options?.entryFile ?? "server.ts"));
+            app = await loadModule(server, join(reactRouterConfig!.entryFile));
           } catch (e) {
             return next(e);
           }
@@ -145,7 +160,6 @@ export const reactRouterHonoServer = (options?: ReactRouterHonoServerOptions): V
             },
           )(req, res);
         };
-      }
 
       server.middlewares.use(await createMiddleware(server));
     },
