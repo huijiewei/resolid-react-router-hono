@@ -1,5 +1,11 @@
 # @resolid/react-router-hono
 
+## 1.1.8
+
+### Patch Changes
+
+- [`ce3cd38`](https://github.com/huijiewei/resolid-react-router-hono/commit/ce3cd382d847a9caa03350df8abe9b4a9fd35c19) Thanks [@huijiewei](https://github.com/huijiewei)! - fix dev server file exclusion
+
 ## 1.1.7
 
 ### Patch Changes
