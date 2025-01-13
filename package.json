@@ -62,15 +62,15 @@
     "@changesets/cli": "^2.27.11",
     "@commitlint/cli": "^19.6.1",
     "@commitlint/config-conventional": "^19.6.0",
-    "@resolid/config": "^3.1.1",
-    "@types/node": "^20.17.11",
-    "eslint": "^9.17.0",
-    "lefthook": "^1.10.1",
+    "@resolid/config": "^3.1.2",
+    "@types/node": "^20.17.12",
+    "eslint": "^9.18.0",
+    "lefthook": "^1.10.3",
     "prettier": "^3.4.2",
     "tsup": "^8.3.5",
-    "type-fest": "^4.31.0",
-    "typescript": "^5.7.2",
-    "vitest": "3.0.0-beta.3"
+    "type-fest": "^4.32.0",
+    "typescript": "^5.7.3",
+    "vitest": "beta"
   },
   "peerDependencies": {
     "@react-router/dev": "^7.1.1",
@@ -80,7 +80,7 @@
   "engines": {
     "node": ">=20.0.0"
   },
-  "packageManager": "pnpm@9.15.2",
+  "packageManager": "pnpm@9.15.3",
   "homepage": "https://www.resolid.tech",
   "repository": {
     "type": "git",
