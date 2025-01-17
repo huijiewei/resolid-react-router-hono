@@ -1,5 +1,11 @@
 # @resolid/react-router-hono
 
+## 1.1.9
+
+### Patch Changes
+
+- [`38a6181`](https://github.com/huijiewei/resolid-react-router-hono/commit/38a6181dc0009b2f0c17b01923eb47b055b03feb) Thanks [@huijiewei](https://github.com/huijiewei)! - update dependencies
+
 ## 1.1.8
 
 ### Patch Changes
