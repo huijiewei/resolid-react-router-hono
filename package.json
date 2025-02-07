@@ -53,34 +53,35 @@
     "@hono/node-server": "^1.13.8",
     "@vercel/nft": "^0.29.1",
     "esbuild": "^0.24.2",
-    "hono": "^4.6.20",
+    "hono": "^4.7.0",
     "minimatch": "^10.0.1"
   },
   "devDependencies": {
     "@arethetypeswrong/cli": "^0.17.3",
     "@changesets/changelog-github": "^0.5.0",
     "@changesets/cli": "^2.27.12",
-    "@commitlint/cli": "^19.6.1",
-    "@commitlint/config-conventional": "^19.6.0",
-    "@resolid/config": "^3.2.1",
-    "@types/node": "^20.17.16",
+    "@commitlint/cli": "^19.7.1",
+    "@commitlint/config-conventional": "^19.7.1",
+    "@resolid/config": "^3.2.2",
+    "@types/node": "^20.17.17",
     "eslint": "^9.19.0",
     "lefthook": "^1.10.10",
     "prettier": "^3.4.2",
+    "prettier-plugin-organize-imports": "^4.1.0",
     "tsup": "^8.3.6",
     "type-fest": "^4.33.0",
     "typescript": "^5.7.3",
-    "vitest": "^3.0.4"
+    "vitest": "^3.0.5"
   },
   "peerDependencies": {
     "@react-router/dev": "^7.1.5",
     "react-router": "^7.1.5",
-    "vite": "^6.0.11"
+    "vite": "^6.1.0"
   },
   "engines": {
     "node": ">=20.0.0"
   },
-  "packageManager": "pnpm@9.15.4",
+  "packageManager": "pnpm@10.2.1",
   "homepage": "https://www.resolid.tech",
   "repository": {
     "type": "git",
@@ -107,6 +108,10 @@
       "string.prototype.includes": "npm:@nolyfill/string.prototype.includes@^1",
       "string.prototype.matchall": "npm:@nolyfill/string.prototype.matchall@^1",
       "string.prototype.repeat": "npm:@nolyfill/string.prototype.repeat@^1"
-    }
+    },
+    "onlyBuiltDependencies": [
+      "esbuild",
+      "lefthook"
+    ]
   }
 }
