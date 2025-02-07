@@ -1,5 +1,13 @@
 # @resolid/react-router-hono
 
+## 1.1.12
+
+### Patch Changes
+
+- [`9ab7aaf`](https://github.com/huijiewei/resolid-react-router-hono/commit/9ab7aaf25277c9101148a7f0800fa95c6b439c11) Thanks [@huijiewei](https://github.com/huijiewei)! - upgrade pnpm to v10
+
+- [`7926a0c`](https://github.com/huijiewei/resolid-react-router-hono/commit/7926a0c2eb97a354f106ccb0a71a714c881fffd8) Thanks [@huijiewei](https://github.com/huijiewei)! - fix dev server for deep app dir
+
 ## 1.1.11
 
 ### Patch Changes
