@@ -79,7 +79,9 @@ export const reactRouterHonoServer = (options?: ReactRouterHonoServerOptions): V
       }
 
       const mergedExclude = [
-        new RegExp(`^(?=\\/${reactRouterConfig.appDir.replaceAll("/", "")}\\/)((?!.*\\.data(\\?|$)).*\\..*(\\?.*)?$)`),
+        new RegExp(
+          `^(?=\\/${reactRouterConfig.appDir.replace(/^\/+|\/+$/g, "").replaceAll("/", "\\/")}\\/)((?!.*\\.data(\\?|$)).*\\..*(\\?.*)?$)`,
+        ),
         /\?import(\?.*)?$/,
         /^\/@.+$/,
         /^\/node_modules\/.*/,
