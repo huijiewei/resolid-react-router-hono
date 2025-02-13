@@ -29,31 +29,31 @@
   },
   "exports": {
     "./dev": {
-      "import": "./dist/dev.js",
-      "types": "./dist/dev.d.ts"
+      "types": "./dist/dev.d.ts",
+      "import": "./dist/dev.js"
     },
     "./node-server": {
-      "import": "./dist/node-server.js",
-      "types": "./dist/node-server.d.ts"
+      "types": "./dist/node-server.d.ts",
+      "import": "./dist/node-server.js"
     },
     "./node-preset": {
-      "import": "./dist/node-preset.js",
-      "types": "./dist/node-preset.d.ts"
+      "types": "./dist/node-preset.d.ts",
+      "import": "./dist/node-preset.js"
     },
     "./vercel-server": {
-      "import": "./dist/vercel-server.js",
-      "types": "./dist/vercel-server.d.ts"
+      "types": "./dist/vercel-server.d.ts",
+      "import": "./dist/vercel-server.js"
     },
     "./vercel-preset": {
-      "import": "./dist/vercel-preset.js",
-      "types": "./dist/vercel-preset.d.ts"
+      "types": "./dist/vercel-preset.d.ts",
+      "import": "./dist/vercel-preset.js"
     }
   },
   "dependencies": {
     "@hono/node-server": "^1.13.8",
     "@vercel/nft": "^0.29.1",
     "esbuild": "^0.24.2",
-    "hono": "^4.7.0",
+    "hono": "^4.7.1",
     "minimatch": "^10.0.1"
   },
   "devDependencies": {
@@ -62,14 +62,14 @@
     "@changesets/cli": "^2.27.12",
     "@commitlint/cli": "^19.7.1",
     "@commitlint/config-conventional": "^19.7.1",
-    "@resolid/config": "^3.2.2",
-    "@types/node": "^20.17.17",
-    "eslint": "^9.19.0",
+    "@resolid/config": "^3.2.3",
+    "@types/node": "^20.17.18",
+    "eslint": "^9.20.1",
     "lefthook": "^1.10.10",
-    "prettier": "^3.4.2",
+    "prettier": "^3.5.1",
     "prettier-plugin-organize-imports": "^4.1.0",
     "tsup": "^8.3.6",
-    "type-fest": "^4.33.0",
+    "type-fest": "^4.34.1",
     "typescript": "^5.7.3",
     "vitest": "^3.0.5"
   },
@@ -81,11 +81,11 @@
   "engines": {
     "node": ">=20.0.0"
   },
-  "packageManager": "pnpm@10.2.1",
+  "packageManager": "pnpm@10.3.0",
   "homepage": "https://www.resolid.tech",
   "repository": {
     "type": "git",
-    "url": "https://github.com/huijiewei/resolid-react-router-hono.git"
+    "url": "git+https://github.com/huijiewei/resolid-react-router-hono.git"
   },
   "pnpm": {
     "overrides": {
