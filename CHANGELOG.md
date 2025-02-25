@@ -1,5 +1,13 @@
 # @resolid/react-router-hono
 
+## 1.1.14
+
+### Patch Changes
+
+- [`785a06c`](https://github.com/huijiewei/resolid-react-router-hono/commit/785a06ce6a5cfbcbbd87a3bac7c03ded33e29e12) Thanks [@huijiewei](https://github.com/huijiewei)! - update dependencies
+
+- [`b22d1b4`](https://github.com/huijiewei/resolid-react-router-hono/commit/b22d1b45c0b8dad66e1348647b2a3715fc418090) Thanks [@huijiewei](https://github.com/huijiewei)! - fix: support hot reload for Vite6
+
 ## 1.1.13
 
 ### Patch Changes
