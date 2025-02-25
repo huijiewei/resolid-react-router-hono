@@ -165,5 +165,9 @@ export const reactRouterHonoServer = (options?: ReactRouterHonoServerOptions): V
 
       server.middlewares.use(await createMiddleware(server));
     },
+    handleHotUpdate({ server }) {
+      server.ws.send({ type: "full-reload" });
+      return [];
+    },
   };
 };
