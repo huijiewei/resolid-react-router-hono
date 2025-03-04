@@ -25,7 +25,7 @@
     "lint": "eslint .",
     "format": "prettier --write .",
     "build": "tsup",
-    "test": "vitest"
+    "test": "vitest run"
   },
   "exports": {
     "./dev": {
@@ -62,15 +62,15 @@
     "@changesets/cli": "^2.28.1",
     "@commitlint/cli": "^19.7.1",
     "@commitlint/config-conventional": "^19.7.1",
-    "@resolid/config": "^3.3.0",
-    "@types/node": "^20.17.19",
+    "@resolid/config": "^3.3.1",
+    "@types/node": "^20.17.23",
     "eslint": "^9.21.0",
-    "lefthook": "^1.11.1",
-    "prettier": "^3.5.2",
+    "lefthook": "^1.11.2",
+    "prettier": "^3.5.3",
     "prettier-plugin-organize-imports": "^4.1.0",
     "tsup": "^8.4.0",
-    "type-fest": "^4.35.0",
-    "typescript": "^5.7.3",
+    "type-fest": "^4.36.0",
+    "typescript": "^5.8.2",
     "vitest": "^3.0.7"
   },
   "peerDependencies": {
@@ -81,7 +81,7 @@
   "engines": {
     "node": ">=20.0.0"
   },
-  "packageManager": "pnpm@10.5.0",
+  "packageManager": "pnpm@10.5.2",
   "homepage": "https://www.resolid.tech",
   "repository": {
     "type": "git",
