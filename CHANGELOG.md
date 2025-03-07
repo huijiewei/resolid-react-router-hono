@@ -1,5 +1,11 @@
 # @resolid/react-router-hono
 
+## 1.2.0
+
+### Minor Changes
+
+- [`1534320`](https://github.com/huijiewei/resolid-react-router-hono/commit/1534320c521454a6654b708fd66a5878bf72319b) Thanks [@huijiewei](https://github.com/huijiewei)! - add unstable_viteEnvironmentApi support
+
 ## 1.1.15
 
 ### Patch Changes
