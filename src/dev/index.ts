@@ -4,7 +4,7 @@ import { minimatch } from "minimatch";
 import { existsSync, statSync } from "node:fs";
 import type http from "node:http";
 import { join, relative } from "node:path";
-import type { Connect, UserConfig, ViteDevServer, Plugin as VitePlugin } from "vite";
+import type { Connect, RunnableDevEnvironment, UserConfig, ViteDevServer, Plugin as VitePlugin } from "vite";
 
 type ReactRouterHonoServerOptions = {
   entryFile?: string;
@@ -16,7 +16,6 @@ type ReactRouterPluginContext = {
   rootDirectory: string;
   entryClientFilePath: string;
   entryServerFilePath: string;
-  isSsrBuild: true;
 };
 
 type Fetch = (
@@ -24,22 +23,21 @@ type Fetch = (
   env: { incoming: http.IncomingMessage; outgoing: http.ServerResponse },
 ) => Promise<Response>;
 
-type LoadModule = (server: ViteDevServer, entry: string) => Promise<{ fetch: Fetch }>;
-
 const resolveReactRouterPluginConfig = (config: UserConfig, options: ReactRouterHonoServerOptions | undefined) => {
   if (!("__reactRouterPluginContext" in config)) {
     return null;
   }
 
-  const reactRouterConfig = config.__reactRouterPluginContext as ReactRouterPluginContext;
+  const { reactRouterConfig, rootDirectory } = config.__reactRouterPluginContext as ReactRouterPluginContext;
 
-  const appDir = relative(reactRouterConfig.rootDirectory, reactRouterConfig.reactRouterConfig.appDirectory);
+  const appDir = relative(rootDirectory, reactRouterConfig.appDirectory);
 
   return {
     appDir: appDir,
     entryFile: join(appDir, options?.entryFile ?? "server.ts"),
-    buildDir: relative(reactRouterConfig.rootDirectory, reactRouterConfig.reactRouterConfig.buildDirectory),
+    buildDir: relative(rootDirectory, reactRouterConfig.buildDirectory),
     assetsDir: config.build?.assetsDir || "assets",
+    feature: reactRouterConfig.future,
   };
 };
 
@@ -116,22 +114,17 @@ export const reactRouterHonoServer = (options?: ReactRouterHonoServerOptions): V
             }
           }
 
-          const loadModule: LoadModule = async (server, entry) => {
-            const appModule = await server.ssrLoadModule(entry);
-            const app = appModule["default"] as { fetch: Fetch };
-            if (!app) {
-              throw new Error(`Failed to find default export from ${entry}`);
-            }
+          let app: null | { fetch: Fetch };
+          const entry = reactRouterConfig!.entryFile;
 
-            return app;
-          };
+          if (reactRouterConfig!.feature.unstable_viteEnvironmentApi) {
+            app = (await (server.environments.ssr as RunnableDevEnvironment).runner.import(entry))["default"];
+          } else {
+            app = (await server.ssrLoadModule(entry))["default"];
+          }
 
-          let app: { fetch: Fetch };
-
-          try {
-            app = await loadModule(server, join(reactRouterConfig!.entryFile));
-          } catch (e) {
-            return next(e);
+          if (!app) {
+            return next(new Error(`Failed to find default export from ${entry}`));
           }
 
           await getRequestListener(
@@ -165,9 +158,12 @@ export const reactRouterHonoServer = (options?: ReactRouterHonoServerOptions): V
 
       server.middlewares.use(await createMiddleware(server));
     },
-    handleHotUpdate({ server }) {
-      server.ws.send({ type: "full-reload" });
-      return [];
+    handleHotUpdate({ server, modules }) {
+      const isSSR = modules.some((mod) => mod._ssrModule);
+      if (isSSR) {
+        server.hot.send({ type: "full-reload" });
+        return [];
+      }
     },
   };
 };
