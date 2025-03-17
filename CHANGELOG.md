@@ -1,5 +1,11 @@
 # @resolid/react-router-hono
 
+## 1.2.1
+
+### Patch Changes
+
+- [`110ba14`](https://github.com/huijiewei/resolid-react-router-hono/commit/110ba1419a1b492ba5a664f0ca6a7013ed27ed38) Thanks [@huijiewei](https://github.com/huijiewei)! - add esbuild bundle loader option
+
 ## 1.2.0
 
 ### Minor Changes
