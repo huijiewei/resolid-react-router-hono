@@ -2,13 +2,14 @@ import type { BuildManifest, Preset } from "@react-router/dev/config";
 import { nodeFileTrace } from "@vercel/nft";
 import { cp, mkdir, readdir, realpath, rm, writeFile } from "node:fs/promises";
 import { basename, dirname, join, relative } from "node:path";
-import { buildEntry, type NodeVersion } from "../build-utils";
+import { buildEntry, type BundlerLoader, type NodeVersion } from "../build-utils";
 
 export type VercelPresetOptions = {
   regions: string[];
   copyParentModules?: string[];
   entryFile?: string;
   nodeVersion?: NodeVersion;
+  bundleLoader?: BundlerLoader;
 };
 
 // noinspection JSUnusedGlobalSymbols
@@ -65,6 +66,7 @@ export const vercelPreset = (options: VercelPresetOptions): Preset => {
               join(rootPath, "package.json"),
               ssrExternal,
               nodeVersion,
+              options.bundleLoader,
             );
 
             await copyFunctionsFiles(

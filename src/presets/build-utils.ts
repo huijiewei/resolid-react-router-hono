@@ -62,6 +62,10 @@ const writePackageJson = async (
   await writeFile(outputFile, JSON.stringify(distPkg, null, 2), "utf8");
 };
 
+export type BundlerLoader = {
+  [p: string]: esbuild.Loader;
+};
+
 export const buildEntry = async (
   appPath: string,
   entryFile: string,
@@ -73,6 +77,7 @@ export const buildEntry = async (
   packageFile: string,
   ssrExternal: string[] | true | undefined,
   nodeVersion: NodeVersion,
+  bundleLoader: BundlerLoader | undefined,
 ): Promise<string> => {
   console.log(`Bundle Server file for ${serverBundleId}...`);
 
@@ -105,6 +110,28 @@ export const buildEntry = async (
       charset: "utf8",
       legalComments: "none",
       minify: false,
+      loader: {
+        ".aac": "file",
+        ".css": "file",
+        ".eot": "file",
+        ".flac": "file",
+        ".gif": "file",
+        ".jpeg": "file",
+        ".jpg": "file",
+        ".mp3": "file",
+        ".mp4": "file",
+        ".ogg": "file",
+        ".otf": "file",
+        ".png": "file",
+        ".svg": "file",
+        ".ttf": "file",
+        ".wav": "file",
+        ".webm": "file",
+        ".webp": "file",
+        ".woff": "file",
+        ".woff2": "file",
+        ...(bundleLoader || {}),
+      },
     })
     .catch((error: unknown) => {
       console.error(error);

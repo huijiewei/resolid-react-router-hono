@@ -1,10 +1,11 @@
 import type { Preset } from "@react-router/dev/config";
 import { dirname, join, relative } from "node:path";
-import { buildEntry, type NodeVersion } from "../build-utils";
+import { buildEntry, type BundlerLoader, type NodeVersion } from "../build-utils";
 
 export type NodePresetOptions = {
   entryFile?: string;
   nodeVersion?: NodeVersion;
+  bundleLoader?: BundlerLoader;
 };
 
 // noinspection JSUnusedGlobalSymbols
@@ -47,6 +48,7 @@ export const nodePreset = (options?: NodePresetOptions): Preset => {
               join(rootPath, "package.json"),
               ssrExternal,
               nodeVersion,
+              options?.bundleLoader,
             );
           }
         },
