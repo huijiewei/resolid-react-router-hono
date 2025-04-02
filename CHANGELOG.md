@@ -1,5 +1,13 @@
 # @resolid/react-router-hono
 
+## 1.2.2
+
+### Patch Changes
+
+- [`7dd2d20`](https://github.com/huijiewei/resolid-react-router-hono/commit/7dd2d202bafeb9fd63e558688c6494d8bc685d52) Thanks [@huijiewei](https://github.com/huijiewei)! - update dependencies
+
+- [`ab62fe6`](https://github.com/huijiewei/resolid-react-router-hono/commit/ab62fe68af5974b46f6831c2c8ad4f42c6b19dd6) Thanks [@huijiewei](https://github.com/huijiewei)! - update environment variable definitions to use JSON.stringify
+
 ## 1.2.1
 
 ### Patch Changes
