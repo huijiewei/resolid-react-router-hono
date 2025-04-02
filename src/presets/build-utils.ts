@@ -97,9 +97,10 @@ export const buildEntry = async (
         "virtual:react-router/server-build": buildFile,
       },
       define: {
-        "process.env.NODE_ENV": "'production'",
-        "import.meta.env.RESOLID_BUILD_DIR": `'${buildDir}'`,
-        "import.meta.env.RESOLID_ASSETS_DIR": `'${assetsDir}'`,
+        "process.env.NODE_ENV": JSON.stringify("production"),
+        "import.meta.env.NODE_ENV": JSON.stringify("production"),
+        "import.meta.env.RESOLID_BUILD_DIR": JSON.stringify(buildDir),
+        "import.meta.env.RESOLID_ASSETS_DIR": JSON.stringify(assetsDir),
       },
       banner: { js: "import { createRequire } from 'module';const require = createRequire(import.meta.url);" },
       platform: "node",
