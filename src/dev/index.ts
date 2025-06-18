@@ -78,12 +78,26 @@ export const reactRouterHonoServer = (options?: ReactRouterHonoServerOptions): V
 
       const mergedExclude = [
         new RegExp(
-          `^(?=\\/${reactRouterConfig.appDir.replace(/^\/+|\/+$/g, "").replaceAll("/", "\\/")}\\/)((?!.*\\.data(\\?|$)).*\\..*(\\?.*)?$)`,
+          `^(?=\\/${reactRouterConfig.appDir.replace(/^[/\\]+|[/\\]+$/g, "").replaceAll(/[/\\]+/g, "/")}\\/)((?!.*\\.data(\\?|$)).*\\..*(\\?.*)?$)`,
+        ),
+        new RegExp(
+          `^(?=\\/${
+            reactRouterConfig.appDir
+              .replace(/^[/\\]+|[/\\]+$/g, "")
+              .replaceAll(/[/\\]+/g, "/")
+              .split("/")[0]
+          }\\/)((?!.*\\.data(\\?|$)).*\\..*(\\?.*)?$)`,
         ),
         /\?import(\?.*)?$/,
         /^\/@.+$/,
         /^\/node_modules\/.*/,
-        `/${reactRouterConfig.appDir}/**/.*/**`,
+        `^(?=\\/${reactRouterConfig.appDir.replace(/^[/\\]+|[/\\]+$/g, "").replace(/[/\\]+/g, "/")}/**/.*/**)`,
+        `^(?=\\/${
+          reactRouterConfig.appDir
+            .replace(/^[/\\]+|[/\\]+$/g, "")
+            .replace(/[/\\]+/g, "/")
+            .split("/")[0]
+        }/**/.*/**)`,
         ...(options?.exclude ?? []),
       ];
 
