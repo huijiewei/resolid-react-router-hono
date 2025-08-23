@@ -1,7 +1,17 @@
 import { type Context, type Env, Hono } from "hono";
 import type { HonoOptions } from "hono/hono-base";
 import type { BlankEnv } from "hono/types";
-import { type AppLoadContext, createRequestHandler, type ServerBuild } from "react-router";
+import {
+  type AppLoadContext,
+  createRequestHandler,
+  type ServerBuild,
+  type UNSAFE_MiddlewareEnabled,
+  type unstable_RouterContextProvider,
+} from "react-router";
+
+export type ReactRouterAppLoadContext = UNSAFE_MiddlewareEnabled extends true
+  ? unstable_RouterContextProvider
+  : AppLoadContext;
 
 export type HonoServerOptions<E extends Env = BlankEnv> = {
   configure?: <E extends Env = BlankEnv>(app: Hono<E>) => Promise<void> | void;
@@ -11,7 +21,7 @@ export type HonoServerOptions<E extends Env = BlankEnv> = {
       build: ServerBuild;
       mode?: string;
     },
-  ) => Promise<AppLoadContext> | AppLoadContext;
+  ) => Promise<ReactRouterAppLoadContext> | ReactRouterAppLoadContext;
   honoOptions?: HonoOptions<E>;
 };
 
