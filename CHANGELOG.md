@@ -1,5 +1,11 @@
 # @resolid/react-router-hono
 
+## 1.6.0
+
+### Minor Changes
+
+- [`a44e549`](https://github.com/huijiewei/resolid-react-router-hono/commit/a44e549316984884803340352366b28a1379c46b) Thanks [@huijiewei](https://github.com/huijiewei)! - update AppLoadContext type to support middleware
+
 ## 1.5.0
 
 ### Minor Changes
