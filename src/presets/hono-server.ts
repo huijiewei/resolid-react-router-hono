@@ -26,7 +26,7 @@ export type HonoServerOptions<E extends Env = BlankEnv> = {
 export const createHonoServer = async <E extends Env = BlankEnv>(
   mode: string | undefined,
   options: HonoServerOptions<E> = {},
-) => {
+): Promise<Hono<E>> => {
   const server = new Hono<E>(options.honoOptions);
 
   if (options.configure) {

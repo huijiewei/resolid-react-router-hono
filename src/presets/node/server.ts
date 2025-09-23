@@ -1,6 +1,6 @@
 import { serve } from "@hono/node-server";
 import { serveStatic } from "@hono/node-server/serve-static";
-import type { Env, MiddlewareHandler } from "hono";
+import type { Env, Hono, MiddlewareHandler } from "hono";
 import { logger } from "hono/logger";
 import type { BlankEnv } from "hono/types";
 import type { AddressInfo } from "node:net";
@@ -34,7 +34,9 @@ export const cache =
   };
 
 // noinspection JSUnusedGlobalSymbols
-export const createHonoNodeServer = async <E extends Env = BlankEnv>(options: HonoNodeServerOptions<E> = {}) => {
+export const createHonoNodeServer = async <E extends Env = BlankEnv>(
+  options: HonoNodeServerOptions<E> = {},
+): Promise<Hono<E>> => {
   const mode = env.NODE_ENV == "test" ? "development" : env.NODE_ENV;
   const isProduction = mode == "production";
 

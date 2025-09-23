@@ -21,11 +21,11 @@
   ],
   "scripts": {
     "preinstall": "npx only-allow pnpm",
-    "check-exports": "attw --pack . --profile esm-only",
     "lint": "eslint .",
     "format": "prettier --write .",
-    "build": "tsup",
-    "test": "vitest run"
+    "build": "tsdown",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
   },
   "exports": {
     "./dev": {
@@ -50,38 +50,37 @@
     }
   },
   "dependencies": {
-    "@hono/node-server": "^1.19.2",
+    "@hono/node-server": "^1.19.4",
     "@vercel/nft": "^0.30.1",
-    "esbuild": "^0.25.9",
-    "hono": "^4.9.7",
+    "esbuild": "^0.25.10",
+    "hono": "^4.9.8",
     "minimatch": "^10.0.3"
   },
   "devDependencies": {
-    "@arethetypeswrong/cli": "^0.18.2",
     "@changesets/changelog-github": "^0.5.1",
     "@changesets/cli": "^2.29.7",
     "@commitlint/cli": "^19.8.1",
     "@commitlint/config-conventional": "^19.8.1",
-    "@resolid/config": "^3.6.0",
-    "@types/node": "^22.18.1",
-    "eslint": "^9.35.0",
-    "lefthook": "^1.13.0",
+    "@resolid/config": "^3.6.3",
+    "@types/node": "^22.18.6",
+    "eslint": "^9.36.0",
+    "lefthook": "^1.13.2",
     "prettier": "^3.6.2",
-    "prettier-plugin-organize-imports": "^4.2.0",
-    "tsup": "^8.5.0",
+    "prettier-plugin-organize-imports": "^4.3.0",
+    "tsdown": "^0.15.4",
     "type-fest": "^4.41.0",
     "typescript": "^5.9.2",
     "vitest": "^3.2.4"
   },
   "peerDependencies": {
-    "@react-router/dev": "^7.9.0",
-    "react-router": "^7.9.0",
-    "vite": "^7.1.5"
+    "@react-router/dev": "^7.9.1",
+    "react-router": "^7.9.1",
+    "vite": "^7.1.7"
   },
   "engines": {
     "node": ">=22.0.0"
   },
-  "packageManager": "pnpm@10.15.0",
+  "packageManager": "pnpm@10.17.1",
   "homepage": "https://www.resolid.tech",
   "repository": {
     "type": "git",

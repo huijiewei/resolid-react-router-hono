@@ -1,4 +1,4 @@
-import { defineConfig } from "tsup";
+import { defineConfig, type UserConfig } from "tsdown";
 
 export default defineConfig({
   entry: {
@@ -8,7 +8,7 @@ export default defineConfig({
     "vercel-server": "src/presets/vercel/server.ts",
     "vercel-preset": "src/presets/vercel/preset.ts",
   },
-  format: ["esm"],
+  format: "esm",
   platform: "node",
   target: "node20",
   dts: true,
@@ -19,4 +19,4 @@ export default defineConfig({
     // virtual module provided by React Router at build time
     "virtual:react-router/server-build",
   ],
-});
+}) as UserConfig;
