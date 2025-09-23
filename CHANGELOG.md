@@ -1,5 +1,11 @@
 # @resolid/react-router-hono
 
+## 1.7.1
+
+### Patch Changes
+
+- [`27acc52`](https://github.com/huijiewei/resolid-react-router-hono/commit/27acc52925f741bad5084ad56f191cce421c7a04) Thanks [@huijiewei](https://github.com/huijiewei)! - replace tsup with tsdown
+
 ## 1.7.0
 
 ### Minor Changes
