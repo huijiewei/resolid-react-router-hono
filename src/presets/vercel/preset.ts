@@ -1,15 +1,22 @@
 import type { BuildManifest, Preset } from "@react-router/dev/config";
-import { nodeFileTrace } from "@vercel/nft";
-import { cp, mkdir, readdir, realpath, rm, writeFile } from "node:fs/promises";
+import { cp, readdir, rm, writeFile } from "node:fs/promises";
 import { basename, dirname, join, relative } from "node:path";
-import { buildEntry, type BundlerLoader, type NodeVersion } from "../build-utils";
+import {
+  buildEntry,
+  type BundlerLoader,
+  copyDependenciesToFunction,
+  createDir,
+  getServerBundles,
+  getServerRoutes,
+  type NodeVersion,
+} from "../build-utils";
 
 export type VercelPresetOptions = {
   regions: string[];
-  copyParentModules?: string[];
   entryFile?: string;
   nodeVersion?: NodeVersion;
   bundleLoader?: BundlerLoader;
+  copyParentModules?: string[];
 };
 
 // noinspection JSUnusedGlobalSymbols
@@ -24,31 +31,25 @@ export const vercelPreset = (options: VercelPresetOptions): Preset => {
         buildEnd: async ({ buildManifest, reactRouterConfig, viteConfig }) => {
           const rootPath = viteConfig.root;
           const appPath = reactRouterConfig.appDirectory;
-          const serverBuildFile = reactRouterConfig.serverBuildFile;
-
-          const clientBuildPath = join(reactRouterConfig.buildDirectory, "client");
-          const serverBuildPath = join(reactRouterConfig.buildDirectory, "server");
-
           const buildDir = relative(rootPath, reactRouterConfig.buildDirectory);
           const assetsDir = viteConfig.build.assetsDir ?? "assets";
+          const packageFile = join(rootPath, "package.json");
 
-          const ssrExternal = viteConfig.ssr.external;
-
-          const serverBundles = buildManifest?.serverBundles ?? {
-            site: { id: "site", file: relative(rootPath, join(serverBuildPath, serverBuildFile)) },
-          };
+          const serverBundles = getServerBundles(
+            buildManifest,
+            rootPath,
+            reactRouterConfig.buildDirectory,
+            reactRouterConfig.serverBuildFile,
+          );
 
           console.log("Bundle Vercel Serverless for production...");
 
-          const vercelRoot = join(rootPath, ".vercel");
-          await rm(vercelRoot, { recursive: true, force: true });
-          await mkdir(vercelRoot, { recursive: true });
+          const vercelOutput = await createDir([rootPath, ".vercel", "output"], true);
 
-          const vercelOutput = join(vercelRoot, "output");
-          await mkdir(vercelOutput, { recursive: true });
-
-          await copyStaticFiles(clientBuildPath, vercelOutput);
+          await copyStaticFiles(join(reactRouterConfig.buildDirectory, "client"), vercelOutput);
           await writeVercelConfigJson(assetsDir, buildManifest, join(vercelOutput, "config.json"));
+
+          const nftCache = {};
 
           for (const key in serverBundles) {
             const serverBundleId = serverBundles[key].id;
@@ -63,8 +64,8 @@ export const vercelPreset = (options: VercelPresetOptions): Preset => {
               buildDir,
               assetsDir,
               serverBundleId,
-              join(rootPath, "package.json"),
-              ssrExternal,
+              packageFile,
+              viteConfig.ssr.external,
               nodeVersion,
               options.bundleLoader,
             );
@@ -73,12 +74,13 @@ export const vercelPreset = (options: VercelPresetOptions): Preset => {
               rootPath,
               vercelOutput,
               buildPath,
-              serverBuildFile,
+              reactRouterConfig.serverBuildFile,
               bundleFile,
               `_${serverBundleId}`,
               nodeVersion,
               options.regions,
               options.copyParentModules ?? [],
+              nftCache,
             );
           }
         },
@@ -97,39 +99,13 @@ const copyFunctionsFiles = async (
   functionRuntime: NodeVersion,
   functionRegions: string[],
   copyParentModules: string[],
+  nftCache: object,
 ) => {
   console.log(`Coping Vercel function files for ${functionName}...`);
 
-  const vercelFunctionDir = join(vercelOutDir, "functions", `${functionName}.func`);
-  await mkdir(vercelFunctionDir, { recursive: true });
+  const vercelFunctionDir = await createDir([vercelOutDir, "functions", `${functionName}.func`]);
 
-  const traced = await nodeFileTrace([bundleFile], {
-    base: rootPath,
-  });
-
-  for (const file of traced.fileList) {
-    const source = join(rootPath, file);
-
-    if (source == bundleFile) {
-      continue;
-    }
-
-    const dest = join(vercelFunctionDir, relative(rootPath, source));
-    const real = await realpath(source);
-
-    if (copyParentModules.find((p) => real.endsWith(p))) {
-      const parent = join(real, "..");
-
-      for (const dir of (await readdir(parent)).filter((d) => !d.startsWith("."))) {
-        const realPath = await realpath(join(parent, dir));
-        const realDest = join(dest, "..", dir);
-
-        await cp(realPath, realDest, { recursive: true });
-      }
-    } else {
-      await cp(real, dest, { recursive: true });
-    }
-  }
+  await copyDependenciesToFunction(bundleFile, rootPath, vercelFunctionDir, copyParentModules, nftCache);
 
   await writeFile(
     join(vercelFunctionDir, ".vc-config.json"),
@@ -159,98 +135,14 @@ const copyFunctionsFiles = async (
 const copyStaticFiles = async (outDir: string, vercelOutDir: string) => {
   console.log("Copying assets...");
 
-  const vercelStaticDir = join(vercelOutDir, "static");
+  const vercelStaticDir = await createDir([vercelOutDir, "static"]);
 
-  await mkdir(vercelStaticDir, { recursive: true });
   await cp(outDir, vercelStaticDir, {
     recursive: true,
     force: true,
   });
+
   await rm(join(vercelStaticDir, ".vite"), { recursive: true, force: true });
-};
-
-const getRoutePathsFromParentId = (routes: BuildManifest["routes"], parentId: string | undefined) => {
-  if (parentId == undefined) {
-    return [];
-  }
-
-  const paths: string[] = [];
-
-  const findPath = (routeId: string) => {
-    const route = routes[routeId];
-
-    if (route.parentId) {
-      findPath(route.parentId);
-    }
-
-    if (route.path) {
-      paths.push(route.path);
-    }
-  };
-
-  findPath(parentId);
-
-  return paths;
-};
-
-const getServerRoutes = (buildManifest: BuildManifest | undefined) => {
-  if (buildManifest?.routeIdToServerBundleId) {
-    const routes: { id: string; path: string }[] = Object.values(buildManifest.routes)
-      .filter((route) => route.id != "root")
-      .map((route) => {
-        const path = [...getRoutePathsFromParentId(buildManifest.routes, route.parentId), route.path].join("/");
-
-        return {
-          id: route.id,
-          path: `/${path}`,
-        };
-      });
-
-    const routePathBundles: Record<string, string[]> = {};
-
-    for (const routeId in buildManifest?.routeIdToServerBundleId) {
-      const serverBoundId = buildManifest?.routeIdToServerBundleId[routeId];
-
-      if (!routePathBundles[serverBoundId]) {
-        routePathBundles[serverBoundId] = [];
-      }
-
-      for (const routePath of routes) {
-        if (routePath.id == routeId) {
-          routePathBundles[serverBoundId].push(routePath.path);
-        }
-      }
-    }
-
-    const bundleRoutes: Record<string, { path: string; bundleId: string }> = {};
-
-    for (const bundleId in routePathBundles) {
-      const paths = routePathBundles[bundleId];
-
-      paths.sort((a, b) => (a.length < b.length ? -1 : 1));
-
-      for (const path of paths) {
-        if (
-          !bundleRoutes[path] &&
-          !Object.keys(bundleRoutes).find((key) => {
-            return bundleRoutes[key].bundleId == bundleId && path.startsWith(bundleRoutes[key].path);
-          })
-        ) {
-          bundleRoutes[path] = { path: path, bundleId: bundleId };
-        }
-      }
-    }
-
-    const result = Object.values(bundleRoutes).map((route) => {
-      return { path: route.path.slice(0, -1), bundleId: route.bundleId };
-    });
-
-    result.sort((a, b) => (a.path.length > b.path.length ? -1 : 1));
-
-    return result;
-  }
-
-  return [{ path: "", bundleId: "site" }];
 };
 
 const writeVercelConfigJson = async (
@@ -266,8 +158,8 @@ const writeVercelConfigJson = async (
   };
 
   configJson.routes.push({
-    src: `^/${assetsDir}/(.*)$`,
-    headers: { "cache-control": "public, max-age=31536000, immutable" },
+    src: `^/${assetsDir}/.*`,
+    headers: { "Cache-Control": "public, max-age=31536000, immutable" },
     continue: true,
   });
 
@@ -280,12 +172,12 @@ const writeVercelConfigJson = async (
   for (const bundle of bundleRoutes) {
     if (bundle.path.length > 0) {
       configJson.routes.push({
-        src: `^${bundle.path}.*`,
+        src: `^${bundle.path}(?:/.*)?$`,
         dest: `_${bundle.bundleId}`,
       });
     } else {
       configJson.routes.push({
-        src: "/(.*)",
+        src: "^/.*$",
         dest: `_${bundle.bundleId}`,
       });
     }

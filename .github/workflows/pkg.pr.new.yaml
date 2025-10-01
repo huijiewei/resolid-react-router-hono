@@ -1,0 +1,38 @@
+name: Publish Any Commit
+
+on:
+  push:
+    branches:
+      - main
+
+concurrency: ${{ github.workflow }}-${{ github.ref }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v5
+
+      - name: Install PNPM
+        uses: pnpm/action-setup@v4
+        with:
+          run_install: false
+
+      - name: Setup Node
+        uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: "pnpm"
+
+      - name: Install Dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build Package
+        run: pnpm run build
+
+      - name: Publish
+        run: pnpm dlx pkg-pr-new publish --no-template --pnpm
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

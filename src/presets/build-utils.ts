@@ -1,6 +1,8 @@
+import type { BuildManifest } from "@react-router/dev/config";
+import { nodeFileTrace } from "@vercel/nft";
 import esbuild from "esbuild";
-import { readFile, writeFile } from "node:fs/promises";
-import { join } from "node:path";
+import { cp, mkdir, readdir, readFile, realpath, rm, writeFile } from "node:fs/promises";
+import { join, relative } from "node:path";
 import { exit } from "node:process";
 import type { PackageJson } from "type-fest";
 import type { ResolvedConfig } from "vite";
@@ -140,4 +142,163 @@ export const buildEntry = async (
     });
 
   return bundleFile;
+};
+
+export const createDir = async (paths: string[], rmBefore: boolean = false): Promise<string> => {
+  const presetRoot = join(...paths);
+
+  if (rmBefore) {
+    await rm(presetRoot, { recursive: true, force: true });
+  }
+
+  await mkdir(presetRoot, { recursive: true });
+
+  return presetRoot;
+};
+
+export const getServerBundles = (
+  buildManifest: BuildManifest | undefined,
+  rootPath: string,
+  buildDirectory: string,
+  serverBuildFile: string,
+): {
+  [serverBundleId: string]: {
+    id: string;
+    file: string;
+  };
+} => {
+  return (
+    buildManifest?.serverBundles ?? {
+      site: {
+        id: "site",
+        file: relative(rootPath, join(join(buildDirectory, "server"), serverBuildFile)),
+      },
+    }
+  );
+};
+
+export const getServerRoutes = (
+  buildManifest: BuildManifest | undefined,
+): {
+  path: string;
+  bundleId: string;
+}[] => {
+  if (buildManifest?.routeIdToServerBundleId) {
+    const routes: { id: string; path: string }[] = Object.values(buildManifest.routes)
+      .filter((route) => route.id != "root")
+      .map((route) => {
+        const path = [...getRoutePathsFromParentId(buildManifest.routes, route.parentId), route.path].join("/");
+
+        return {
+          id: route.id,
+          path: `/${path}`,
+        };
+      });
+
+    const routePathBundles: Record<string, string[]> = {};
+
+    for (const routeId in buildManifest?.routeIdToServerBundleId) {
+      const serverBoundId = buildManifest?.routeIdToServerBundleId[routeId];
+
+      if (!routePathBundles[serverBoundId]) {
+        routePathBundles[serverBoundId] = [];
+      }
+
+      for (const routePath of routes) {
+        if (routePath.id == routeId) {
+          routePathBundles[serverBoundId].push(routePath.path);
+        }
+      }
+    }
+
+    const bundleRoutes: Record<string, { path: string; bundleId: string }> = {};
+
+    for (const bundleId in routePathBundles) {
+      const paths = routePathBundles[bundleId];
+
+      paths.sort((a, b) => (a.length < b.length ? -1 : 1));
+
+      for (const path of paths) {
+        if (
+          !bundleRoutes[path] &&
+          !Object.keys(bundleRoutes).find((key) => {
+            return bundleRoutes[key].bundleId == bundleId && path.startsWith(bundleRoutes[key].path);
+          })
+        ) {
+          bundleRoutes[path] = { path: path, bundleId: bundleId };
+        }
+      }
+    }
+
+    const result = Object.values(bundleRoutes).map((route) => {
+      return { path: route.path.slice(0, -1), bundleId: route.bundleId };
+    });
+
+    result.sort((a, b) => (a.path.length > b.path.length ? -1 : 1));
+
+    return result;
+  }
+
+  return [{ path: "", bundleId: "site" }];
+};
+
+const getRoutePathsFromParentId = (routes: BuildManifest["routes"], parentId: string | undefined) => {
+  if (parentId == undefined) {
+    return [];
+  }
+
+  const paths: string[] = [];
+
+  const findPath = (routeId: string) => {
+    const route = routes[routeId];
+
+    if (route.parentId) {
+      findPath(route.parentId);
+    }
+
+    if (route.path) {
+      paths.push(route.path);
+    }
+  };
+
+  findPath(parentId);
+
+  return paths;
+};
+
+export const copyDependenciesToFunction = async (
+  bundleFile: string,
+  basePath: string,
+  destPath: string,
+  copyParentModules: string[],
+  nftCache: object,
+): Promise<void> => {
+  const traced = await nodeFileTrace([bundleFile], {
+    base: basePath,
+    cache: nftCache,
+  });
+
+  for (const file of traced.fileList) {
+    const source = join(basePath, file);
+
+    if (source == bundleFile) {
+      continue;
+    }
+
+    const real = await realpath(source);
+    const dest = join(destPath, relative(basePath, source));
+
+    if (copyParentModules.find((p) => real.endsWith(p))) {
+      const parent = join(real, "..");
+
+      for (const dir of (await readdir(parent)).filter((d) => !d.startsWith("."))) {
+        const realPath = await realpath(join(parent, dir));
+        const realDest = join(dest, "..", dir);
+
+        await cp(realPath, realDest, { recursive: true });
+      }
+    } else {
+      await cp(real, dest, { recursive: true });
+    }
+  }
 };

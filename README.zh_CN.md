@@ -9,6 +9,7 @@ React Router Hono 服务包
 - [开发服务器](#开发服务器)
 - [Node.js 服务](#nodejs-服务)
 - [Vercel 服务](#vercel-服务)
+- [Netlify 服务](#netlify-服务)
 - [Hono 中间件](#hono-中间件)
 - [React Router 负载上下文](#react-router-负载上下文)
 
@@ -30,7 +31,6 @@ pnpm add hono @hono/node-server
 
 ```ts
 // vite.config.ts
-
 import { reactRouter } from "@react-router/dev/vite";
 import { reactRouterHonoServer } from "@resolid/react-router-hono/dev";
 import { defineConfig } from "vite";
@@ -54,7 +54,6 @@ export default defineConfig({
 
 ```ts
 // app/server.node.ts
-
 import { createHonoNodeServer } from "@resolid/react-router-hono/node-server";
 
 export default await createHonoNodeServer();
@@ -64,7 +63,6 @@ export default await createHonoNodeServer();
 
 ```ts
 // react-router.config.ts
-
 import type { Config } from "@react-router/dev/config";
 import { nodePreset } from "@resolid/react-router-hono/node-preset";
 
@@ -92,7 +90,6 @@ export default {
 
 ```ts
 // app/server.vercel.ts
-
 import { createHonoVercelServer } from "@resolid/react-router-hono/vercel-server";
 
 export default await createHonoVercelServer();
@@ -102,20 +99,19 @@ export default await createHonoVercelServer();
 
 ```ts
 // react-router.config.ts
-
 import type { Config } from "@react-router/dev/config";
-import { vercelPreset } from "@resolid/remix-plugins/vercel-preset";
+import { vercelPreset } from "@resolid/react-router-hono/vercel-preset";
 
 export default {
   presets: [
     vercelPreset({
+      // 入口文件
+      entryFile: "server.vercel.ts", // 默认为 server.ts
+      nodeVersion: 22, // 默认为 22
       // 部署区域
       regions: ["sin1"],
       // 有些包会根据不同平台引入二进制包, 安装的时候二进制包不在同一目录, 比如 @node-rs/bcrypt
       copyParentModules: ["@node-rs/bcrypt"],
-      // 入口文件
-      entryFile: "server.vercel.ts", // 默认为 server.ts
-      nodeVersion: 22, // 默认为 22
     }),
   ],
 } satisfies Config;
@@ -126,6 +122,40 @@ export default {
 > 如果你使用的是 monorepo 结构, 请设置 Root Directory 为需要部署的项目目录,
 > 然后自定义相关命令, [Resolid](https://github.com/huijiewei/resolid) 的配置如下图
 > ![Vercel相关设置](.github/assets/vercel-settings.png)
+
+## Netlify 服务
+
+> 你可以使用 https://github.com/huijiewei/react-router-hono-netlify-template 模版快速部署到 Vercel.
+
+### 创建 Netlify 服务
+
+```ts
+// app/server.netlify.ts
+import { createHonoNetlifyServer } from "@resolid/react-router-hono/vercel-server";
+
+export default await createHonoNetlifyServer();
+```
+
+### 配置 Vercel Preset
+
+```ts
+// react-router.config.ts
+
+import type { Config } from "@react-router/dev/config";
+import { netlifyPreset } from "@resolid/react-router-hono/netlify-preset";
+
+export default {
+  presets: [
+    netlifyPreset({
+      // 入口文件
+      entryFile: "server.netlify.ts", // 默认为 server.ts
+      nodeVersion: 22, // 默认为 22
+      // 有些包会根据不同平台引入二进制包, 安装的时候二进制包不在同一目录, 比如 @node-rs/bcrypt
+      copyParentModules: ["@node-rs/bcrypt"],
+    }),
+  ],
+} satisfies Config;
+```
 
 ## Hono 中间件
 

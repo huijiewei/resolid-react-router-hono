@@ -9,6 +9,7 @@ Resolid Remix extension package, mainly some plug-ins to enhance Remix and needs
 - [Dev Server](#dev-server)
 - [Node.js Serve](#nodejs-serve)
 - [Vercel Serve](#vercel-serve)
+- [Netlify Serve](#netlify-serve)
 - [Hono Middleware](#hono-middleware)
 - [React Router Load Context](#remix-load-context)
 
@@ -30,7 +31,6 @@ Edit vite.config.ts to config dev server
 
 ```ts
 // vite.config.ts
-
 import { reactRouter } from "@react-router/dev/vite";
 import { reactRouterHonoServer } from "@resolid/react-router-hono/dev";
 import { defineConfig } from "vite";
@@ -54,7 +54,6 @@ export default defineConfig({
 
 ```ts
 // app/server.node.ts
-
 import { createHonoNodeServer } from "@resolid/react-router-hono/node-server";
 
 export default await createHonoNodeServer();
@@ -64,7 +63,6 @@ export default await createHonoNodeServer();
 
 ```ts
 // react-router.config.ts
-
 import type { Config } from "@react-router/dev/config";
 import { nodePreset } from "@resolid/react-router-hono/node-preset";
 
@@ -95,7 +93,6 @@ for React Router's serverBundles feature.
 
 ```ts
 // app/server.vercel.ts
-
 import { createHonoVercelServer } from "@resolid/react-router-hono/vercel-server";
 
 export default await createHonoVercelServer();
@@ -105,20 +102,61 @@ export default await createHonoVercelServer();
 
 ```ts
 // react-router.config.ts
-
 import type { Config } from "@react-router/dev/config";
-import { vercelPreset } from "@resolid/remix-plugins/vercel-preset";
+import { vercelPreset } from "@resolid/react-router-hono/vercel-preset";
 
 export default {
   presets: [
     vercelPreset({
       // Deployment area
       regions: ["sin1"],
+      // Entry file
+      entryFile: "server.vercel.ts", // default is server.ts
+      nodeVersion: 22, // default is 22
       // Some packages will introduce binary packages according to different platforms. The binary packages are not in the same directory during installation, such as @node-rs/bcrypt
       copyParentModules: ["@node-rs/bcrypt"],
+    }),
+  ],
+} satisfies Config;
+```
+
+> Vercel project Framework Preset needs to be set to Vite, Node.js Version needs to be same
+>
+> If you are using a monorepo structure, please set the Root Directory to the project directory that needs to be
+> deployed, and then customize the relevant commands. The configuration
+> of [Resolid](https://github.com/huijiewei/resolid)
+> is as shown below
+> ![Vercel related settings](.github/assets/vercel-settings.png)
+
+## Netlify Serve
+
+> You can use https://github.com/huijiewei/react-router-hono-netlify-template to quick start deploy to netlify.
+
+### Create Netlify server
+
+```ts
+// app/server.netlify.ts
+import { createHonoNetlifyServer } from "@resolid/react-router-hono/netlify-server";
+
+export default await createHonoNetlifyServer();
+```
+
+### Config Netlify Preset in React Router Config
+
+```ts
+// react-router.config.ts
+
+import type { Config } from "@react-router/dev/config";
+import { netlifyPreset } from "@resolid/react-router-hono/netlify-preset";
+
+export default {
+  presets: [
+    netlifyPreset({
       // Entry file
-      entryFile: "server.node.ts", // default is server.ts
+      entryFile: "server.netlify.ts", // default is server.ts
       nodeVersion: 22, // default is 22
+      // Some packages will introduce binary packages according to different platforms. The binary packages are not in the same directory during installation, such as @node-rs/bcrypt
+      copyParentModules: ["@node-rs/bcrypt"],
     }),
   ],
 } satisfies Config;

@@ -1,6 +1,6 @@
 import type { Preset } from "@react-router/dev/config";
 import { dirname, join, relative } from "node:path";
-import { buildEntry, type BundlerLoader, type NodeVersion } from "../build-utils";
+import { buildEntry, type BundlerLoader, getServerBundles, type NodeVersion } from "../build-utils";
 
 export type NodePresetOptions = {
   entryFile?: string;
@@ -19,18 +19,16 @@ export const nodePreset = (options?: NodePresetOptions): Preset => {
       return {
         buildEnd: async ({ buildManifest, reactRouterConfig, viteConfig }) => {
           const rootPath = viteConfig.root;
-          const appPath = reactRouterConfig.appDirectory;
-          const serverBuildFile = reactRouterConfig.serverBuildFile;
-          const serverBuildPath = join(reactRouterConfig.buildDirectory, "server");
-
           const buildDir = relative(rootPath, reactRouterConfig.buildDirectory);
           const assetsDir = viteConfig.build.assetsDir ?? "assets";
+          const packageFile = join(rootPath, "package.json");
 
-          const ssrExternal = viteConfig.ssr.external;
-
-          const serverBundles = buildManifest?.serverBundles ?? {
-            site: { id: "site", file: relative(rootPath, join(serverBuildPath, serverBuildFile)) },
-          };
+          const serverBundles = getServerBundles(
+            buildManifest,
+            rootPath,
+            reactRouterConfig.buildDirectory,
+            reactRouterConfig.serverBuildFile,
+          );
 
           for (const key in serverBundles) {
             const serverBundleId = serverBundles[key].id;
@@ -38,15 +36,15 @@ export const nodePreset = (options?: NodePresetOptions): Preset => {
             const buildPath = dirname(buildFile);
 
             await buildEntry(
-              appPath,
+              reactRouterConfig.appDirectory,
               options?.entryFile ?? "server.ts",
               buildPath,
               buildFile,
               buildDir,
               assetsDir,
               serverBundleId,
-              join(rootPath, "package.json"),
-              ssrExternal,
+              packageFile,
+              viteConfig.ssr.external,
               nodeVersion,
               options?.bundleLoader,
             );

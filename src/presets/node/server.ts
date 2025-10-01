@@ -30,7 +30,7 @@ export const cache =
       return;
     }
 
-    c.res.headers.set("cache-control", `public, max-age=${seconds}${immutable ? ", immutable" : ""}`);
+    c.res.headers.set("Cache-Control", `public, max-age=${seconds}${immutable ? ", immutable" : ""}`);
   };
 
 // noinspection JSUnusedGlobalSymbols

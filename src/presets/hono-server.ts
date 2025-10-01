@@ -14,7 +14,7 @@ export type ReactRouterAppLoadContext = UNSAFE_MiddlewareEnabled extends true ? 
 export type HonoServerOptions<E extends Env = BlankEnv> = {
   configure?: <E extends Env = BlankEnv>(app: Hono<E>) => Promise<void> | void;
   getLoadContext?: (
-    c: Context,
+    c: Context<E>,
     options: {
       build: ServerBuild;
       mode?: string;
