@@ -1,5 +1,11 @@
 # @resolid/react-router-hono
 
+## 1.8.0
+
+### Minor Changes
+
+- [`8a91cd7`](https://github.com/huijiewei/resolid-react-router-hono/commit/8a91cd7f627bc5dbcb91ae7ed198a5968190e90e) Thanks [@huijiewei](https://github.com/huijiewei)! - add Netlify preset for serverless deployment
+
 ## 1.7.1
 
 ### Patch Changes
