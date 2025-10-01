@@ -162,14 +162,6 @@ export default {
 } satisfies Config;
 ```
 
-> Vercel project Framework Preset needs to be set to Vite, Node.js Version needs to be same
->
-> If you are using a monorepo structure, please set the Root Directory to the project directory that needs to be
-> deployed, and then customize the relevant commands. The configuration
-> of [Resolid](https://github.com/huijiewei/resolid)
-> is as shown below
-> ![Vercel related settings](.github/assets/vercel-settings.png)
-
 ## Hono Middleware
 
 Middleware are functions that are called before React Router calls your loader/action. See
