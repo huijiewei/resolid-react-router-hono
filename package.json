@@ -21,7 +21,6 @@
     "dist"
   ],
   "scripts": {
-    "preinstall": "npx only-allow pnpm",
     "lint": "eslint .",
     "format": "prettier --write .",
     "build": "tsdown",
@@ -62,7 +61,7 @@
     "@hono/node-server": "^1.19.5",
     "@vercel/nft": "^0.30.2",
     "esbuild": "^0.25.10",
-    "hono": "^4.9.9",
+    "hono": "^4.9.10",
     "minimatch": "^10.0.3"
   },
   "devDependencies": {
@@ -71,9 +70,9 @@
     "@commitlint/cli": "^20.1.0",
     "@commitlint/config-conventional": "^20.0.0",
     "@netlify/types": "^2.0.3",
-    "@resolid/config": "^3.6.3",
+    "@resolid/config": "^3.8.0",
     "@types/node": "^22.18.8",
-    "eslint": "^9.36.0",
+    "eslint": "^9.37.0",
     "lefthook": "^1.13.6",
     "prettier": "^3.6.2",
     "prettier-plugin-organize-imports": "^4.3.0",
@@ -86,7 +85,7 @@
     "@netlify/types": "^2.0.3",
     "@react-router/dev": "^7.9.3",
     "react-router": "^7.9.3",
-    "vite": "^7.1.7"
+    "vite": "^7.1.9"
   },
   "peerDependenciesMeta": {
     "@netlify/types": {
@@ -94,9 +93,9 @@
     }
   },
   "engines": {
-    "node": ">=22.0.0"
+    "node": "^20.19.0 || ^22.13.0 || >=24"
   },
-  "packageManager": "pnpm@10.17.1",
+  "packageManager": "pnpm@10.18.1",
   "homepage": "https://www.resolid.tech",
   "repository": {
     "type": "git",

@@ -12,7 +12,7 @@ export default defineConfig({
   },
   format: "esm",
   platform: "node",
-  target: "node20",
+  target: "node20.19",
   dts: true,
   treeshake: true,
   clean: true,
