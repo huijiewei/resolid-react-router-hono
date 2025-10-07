@@ -1,5 +1,15 @@
 # @resolid/react-router-hono
 
+## 2.0.0
+
+### Major Changes
+
+- [`f8d879b`](https://github.com/huijiewei/resolid-react-router-hono/commit/f8d879b06739341deedcc7c208bb0a23994f301c) Thanks [@huijiewei](https://github.com/huijiewei)! - refactor platform presets and remove copyParentModules options
+
+### Minor Changes
+
+- [`3033b60`](https://github.com/huijiewei/resolid-react-router-hono/commit/3033b60292679ac8f2ad94547d81734834fb667b) Thanks [@huijiewei](https://github.com/huijiewei)! - update node support version
+
 ## 1.8.0
 
 ### Minor Changes
