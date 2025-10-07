@@ -1,5 +1,11 @@
 # @resolid/react-router-hono
 
+## 2.0.1
+
+### Patch Changes
+
+- [`4ade86f`](https://github.com/huijiewei/resolid-react-router-hono/commit/4ade86fc3046478e3099e6af05d475ab89187311) Thanks [@huijiewei](https://github.com/huijiewei)! - fix netlify preset
+
 ## 2.0.0
 
 ### Major Changes
