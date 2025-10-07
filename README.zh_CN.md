@@ -110,8 +110,6 @@ export default {
       nodeVersion: 22, // 默认为 22
       // 部署区域
       regions: ["sin1"],
-      // 有些包会根据不同平台引入二进制包, 安装的时候二进制包不在同一目录, 比如 @node-rs/bcrypt
-      copyParentModules: ["@node-rs/bcrypt"],
     }),
   ],
 } satisfies Config;
@@ -150,8 +148,6 @@ export default {
       // 入口文件
       entryFile: "server.netlify.ts", // 默认为 server.ts
       nodeVersion: 22, // 默认为 22
-      // 有些包会根据不同平台引入二进制包, 安装的时候二进制包不在同一目录, 比如 @node-rs/bcrypt
-      copyParentModules: ["@node-rs/bcrypt"],
     }),
   ],
 } satisfies Config;

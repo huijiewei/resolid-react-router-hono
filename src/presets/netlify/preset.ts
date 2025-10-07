@@ -1,24 +1,18 @@
 import type { Preset } from "@react-router/dev/config";
 import { writeFile } from "node:fs/promises";
-import { dirname, join, relative } from "node:path";
+import { join } from "node:path";
 import { name, version } from "../../../package.json";
 import {
-  buildEntry,
-  type BundlerLoader,
+  buildPreset,
   copyDependenciesToFunction,
   createDir,
-  getServerBundles,
   getServerRoutes,
-  type NodeVersion,
-} from "../build-utils";
+  type PresetBaseOptions,
+} from "../preset-utils";
 
-export type NetlifyPresetOptions = {
-  entryFile?: string;
-  nodeVersion?: NodeVersion;
-  bundleLoader?: BundlerLoader;
-  copyParentModules?: string[];
-};
+export type NetlifyPresetOptions = PresetBaseOptions;
 
+// noinspection JSUnusedGlobalSymbols
 export const netlifyPreset = (options: NetlifyPresetOptions): Preset => {
   const nodeVersion = options.nodeVersion ?? 22;
 
@@ -27,98 +21,64 @@ export const netlifyPreset = (options: NetlifyPresetOptions): Preset => {
     reactRouterConfig: () => {
       return {
         buildEnd: async ({ buildManifest, reactRouterConfig, viteConfig }) => {
-          const rootPath = viteConfig.root;
-          const appPath = reactRouterConfig.appDirectory;
-          const buildDir = relative(rootPath, reactRouterConfig.buildDirectory);
-          const assetsDir = viteConfig.build.assetsDir ?? "assets";
-          const packageFile = join(rootPath, "package.json");
+          await buildPreset<{
+            netlifyRoot: string;
+            netlifyFunctionDir: string;
+            serverRoutes: { path: string; bundleId: string }[];
+            nftCache: object;
+          }>({
+            entryFile: options.entryFile,
+            nodeVersion,
+            bundleLoader: options?.bundleLoader,
+            buildManifest: buildManifest,
+            reactRouterConfig: reactRouterConfig,
+            viteConfig: viteConfig,
+            buildStart: async () => {
+              console.log("Bundle Netlify Serverless for production...");
 
-          const serverBundles = getServerBundles(
-            buildManifest,
-            rootPath,
-            reactRouterConfig.buildDirectory,
-            reactRouterConfig.serverBuildFile,
-          );
+              const netlifyRoot = await createDir([viteConfig.root, ".netlify", "v1"], true);
 
-          console.log("Bundle Netlify Serverless for production...");
+              await writeNetlifyConfigJson(viteConfig.build.assetsDir ?? "assets", join(netlifyRoot, "config.json"));
 
-          const netlifyRoot = await createDir([rootPath, ".netlify", "v1"], true);
+              const netlifyFunctionDir = await createDir([netlifyRoot, "functions"]);
 
-          await writeNetlifyConfigJson(assetsDir, join(netlifyRoot, "config.json"));
+              const serverRoutes = getServerRoutes(buildManifest);
 
-          const netlifyFunctionDir = await createDir([netlifyRoot, "functions"]);
+              return { netlifyRoot, netlifyFunctionDir, serverRoutes, nftCache: {} };
+            },
+            buildBundleEnd: async (context, _buildPath, bundleId, bundleFile) => {
+              console.log(`Coping Netlify function files for ${bundleId}...`);
 
-          const serverRoutes = getServerRoutes(buildManifest);
+              const handleFile = await copyDependenciesToFunction(
+                bundleFile,
+                context.netlifyFunctionDir,
+                context.nftCache,
+              );
 
-          const nftCache = {};
+              const serverRoutePath = context.serverRoutes.find((r) => r.bundleId == bundleId)?.path;
 
-          for (const key in serverBundles) {
-            const serverBundleId = serverBundles[key].id;
-            const buildFile = join(rootPath, serverBundles[key].file);
-            const buildPath = dirname(buildFile);
-            const serverRoutePath = serverRoutes.find((r) => r.bundleId == serverBundleId)?.path;
+              const pathPattern = !serverRoutePath ? "/*" : [serverRoutePath, `${serverRoutePath}/*`];
 
-            const bundleFile = await buildEntry(
-              appPath,
-              options?.entryFile ?? "server.ts",
-              buildPath,
-              buildFile,
-              buildDir,
-              assetsDir,
-              serverBundleId,
-              packageFile,
-              viteConfig.ssr.external,
-              nodeVersion,
-              options.bundleLoader,
-            );
-
-            await copyFunctionsFiles(
-              rootPath,
-              netlifyFunctionDir,
-              bundleFile,
-              serverBundleId,
-              serverRoutePath ?? "",
-              nodeVersion,
-              options.copyParentModules ?? [],
-              nftCache,
-            );
-          }
-        },
-      };
-    },
-  };
-};
-
-const copyFunctionsFiles = async (
-  rootPath: string,
-  netlifyFunctionDir: string,
-  bundleFile: string,
-  functionName: string,
-  functionPath: string,
-  nodeVersion: NodeVersion,
-  copyParentModules: string[],
-  nftCache: object,
-) => {
-  console.log(`Coping Netlify function files for ${functionName}...`);
-
-  await copyDependenciesToFunction(bundleFile, rootPath, netlifyFunctionDir, copyParentModules, nftCache);
-
-  const pathPattern = functionPath == "" ? "/*" : [functionPath, `${functionPath}/*`];
-
-  await writeFile(
-    join(netlifyFunctionDir, `${functionName}.mjs`),
-    `export { default } from "${relative(netlifyFunctionDir, bundleFile)}";
+              await writeFile(
+                join(context.netlifyFunctionDir, `${bundleId}.mjs`),
+                `export { default } from "${handleFile}";
 
 export const config = {
   path: ${Array.isArray(pathPattern) ? JSON.stringify(pathPattern) : `"${pathPattern}"`},
-  displayName: "${functionName} server",
+  displayName: "${bundleId} server",
   generator: "${name}@${version}",
   preferStatic: true,
   nodeVersion: ${nodeVersion}
 };
 `,
-    "utf8",
-  );
+                "utf8",
+              );
+            },
+          });
+        },
+      };
+    },
+  };
 };
 
 const writeNetlifyConfigJson = async (assetsDir: string, netlifyConfigFile: string) => {

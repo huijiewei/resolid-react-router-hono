@@ -1,17 +1,104 @@
 import type { BuildManifest } from "@react-router/dev/config";
 import { nodeFileTrace } from "@vercel/nft";
 import esbuild from "esbuild";
-import { cp, mkdir, readdir, readFile, realpath, rm, writeFile } from "node:fs/promises";
-import { join, relative } from "node:path";
+import { statSync } from "node:fs";
+import { cp, mkdir, readFile, realpath, rm, symlink, writeFile } from "node:fs/promises";
+import { dirname, join, relative, sep } from "node:path";
 import { exit } from "node:process";
 import type { PackageJson } from "type-fest";
 import type { ResolvedConfig } from "vite";
 
-export type NodeVersion = 20 | 22;
+type OptionalToUndefined<T> = {
+  [K in keyof T]: T[K] | undefined;
+};
+type BundlerLoader = {
+  [p: string]: esbuild.Loader;
+};
+type NodeVersion = 20 | 22;
 
-export type SsrExternal = ResolvedConfig["ssr"]["external"];
+export type PresetBaseOptions = {
+  entryFile?: string;
+  nodeVersion?: NodeVersion;
+  bundleLoader?: {
+    [p: string]: esbuild.Loader;
+  };
+};
 
-const getPackageDependencies = (dependencies: Record<string, string | undefined>, ssrExternal: SsrExternal) => {
+type BuildPresetOptions<BuildContext> = OptionalToUndefined<PresetBaseOptions> & {
+  buildManifest: BuildManifest | undefined;
+  reactRouterConfig: Readonly<{
+    appDirectory: string;
+    buildDirectory: string;
+    serverBuildFile: string;
+  }>;
+  viteConfig: ResolvedConfig;
+  buildStart: () => Promise<BuildContext>;
+  buildBundleEnd?: (
+    context: BuildContext,
+    buildPath: string,
+    bundleId: string,
+    bundleFile: string,
+    packageDeps: Record<string, string>,
+  ) => Promise<void>;
+};
+
+export const buildPreset = async <BuildContext>({
+  entryFile = "server.ts",
+  nodeVersion = 22,
+  bundleLoader = {},
+  buildManifest,
+  reactRouterConfig,
+  viteConfig,
+  buildStart,
+  buildBundleEnd,
+}: BuildPresetOptions<BuildContext>): Promise<void> => {
+  const rootPath = viteConfig.root;
+  const appPath = reactRouterConfig.appDirectory;
+  const buildDir = relative(rootPath, reactRouterConfig.buildDirectory);
+  const assetsDir = viteConfig.build.assetsDir ?? "assets";
+  const packageJson = JSON.parse(await readFile(join(rootPath, "package.json"), "utf8")) as PackageJson;
+  const packageDeps = getPackageDependencies({ ...packageJson.dependencies }, viteConfig.ssr.external);
+
+  const serverBundles = buildManifest?.serverBundles ?? {
+    site: {
+      id: "site",
+      file: relative(
+        rootPath,
+        join(join(reactRouterConfig.buildDirectory, "server"), reactRouterConfig.serverBuildFile),
+      ),
+    },
+  };
+
+  const context = await buildStart();
+
+  for (const bundle in serverBundles) {
+    const bundleId = serverBundles[bundle].id;
+    const buildFile = join(rootPath, serverBundles[bundle].file);
+    const buildPath = dirname(buildFile);
+
+    await writePackageJson(join(buildPath, "package.json"), packageJson, packageDeps, nodeVersion);
+
+    const bundleFile = await buildBundle(
+      appPath,
+      entryFile,
+      buildPath,
+      buildFile,
+      buildDir,
+      assetsDir,
+      bundleId,
+      packageDeps,
+      nodeVersion,
+      bundleLoader,
+    );
+
+    buildBundleEnd?.(context, buildPath, bundleId, bundleFile, packageDeps);
+  }
+};
+
+const getPackageDependencies = (
+  dependencies: Record<string, string | undefined>,
+  ssrExternal: ResolvedConfig["ssr"]["external"],
+): Record<string, string> => {
   const ssrExternalFiltered = Array.isArray(ssrExternal)
     ? ssrExternal.filter(
         (id) =>
@@ -44,18 +131,18 @@ const getPackageDependencies = (dependencies: Record<string, string | undefined>
 };
 
 const writePackageJson = async (
-  pkg: PackageJson,
   outputFile: string,
-  dependencies: unknown,
+  packageJson: PackageJson,
+  packageDeps: unknown,
   nodeVersion: NodeVersion,
-) => {
+): Promise<void> => {
   const distPkg = {
-    name: pkg.name,
-    type: pkg.type,
+    name: packageJson.name,
+    type: packageJson.type,
     scripts: {
-      postinstall: pkg.scripts?.postinstall ?? "",
+      postinstall: packageJson.scripts?.postinstall ?? "",
     },
-    dependencies: dependencies,
+    dependencies: packageDeps,
     engines: {
       node: `${nodeVersion}.x`,
     },
@@ -64,11 +151,7 @@ const writePackageJson = async (
   await writeFile(outputFile, JSON.stringify(distPkg, null, 2), "utf8");
 };
 
-export type BundlerLoader = {
-  [p: string]: esbuild.Loader;
-};
-
-export const buildEntry = async (
+const buildBundle = async (
   appPath: string,
   entryFile: string,
   buildPath: string,
@@ -76,18 +159,11 @@ export const buildEntry = async (
   buildDir: string,
   assetsDir: string,
   serverBundleId: string,
-  packageFile: string,
-  ssrExternal: string[] | true | undefined,
+  packageDeps: Record<string, string>,
   nodeVersion: NodeVersion,
-  bundleLoader: BundlerLoader | undefined,
+  bundleLoader: BundlerLoader,
 ): Promise<string> => {
-  console.log(`Bundle Server file for ${serverBundleId}...`);
-
-  const pkg = JSON.parse(await readFile(packageFile, "utf8")) as PackageJson;
-
-  const packageDependencies = getPackageDependencies({ ...pkg.dependencies }, ssrExternal);
-
-  await writePackageJson(pkg, join(buildPath, "package.json"), packageDependencies, nodeVersion);
+  console.log(`Bundle file for ${serverBundleId}...`);
 
   const bundleFile = join(buildPath, "server.mjs");
 
@@ -108,7 +184,7 @@ export const buildEntry = async (
       platform: "node",
       target: `node${nodeVersion}`,
       format: "esm",
-      external: ["vite", ...Object.keys(packageDependencies)],
+      external: ["vite", ...Object.keys(packageDeps)],
       bundle: true,
       charset: "utf8",
       legalComments: "none",
@@ -133,7 +209,7 @@ export const buildEntry = async (
         ".webp": "file",
         ".woff": "file",
         ".woff2": "file",
-        ...(bundleLoader || {}),
+        ...bundleLoader,
       },
     })
     .catch((error: unknown) => {
@@ -154,27 +230,6 @@ export const createDir = async (paths: string[], rmBefore: boolean = false): Pro
   await mkdir(presetRoot, { recursive: true });
 
   return presetRoot;
-};
-
-export const getServerBundles = (
-  buildManifest: BuildManifest | undefined,
-  rootPath: string,
-  buildDirectory: string,
-  serverBuildFile: string,
-): {
-  [serverBundleId: string]: {
-    id: string;
-    file: string;
-  };
-} => {
-  return (
-    buildManifest?.serverBundles ?? {
-      site: {
-        id: "site",
-        file: relative(rootPath, join(join(buildDirectory, "server"), serverBuildFile)),
-      },
-    }
-  );
 };
 
 export const getServerRoutes = (
@@ -266,39 +321,71 @@ const getRoutePathsFromParentId = (routes: BuildManifest["routes"], parentId: st
   return paths;
 };
 
+// from: https://github.com/sveltejs/kit/blob/main/packages/adapter-vercel/index.js
 export const copyDependenciesToFunction = async (
   bundleFile: string,
-  basePath: string,
   destPath: string,
-  copyParentModules: string[],
   nftCache: object,
-): Promise<void> => {
+): Promise<string> => {
+  let base = bundleFile;
+  let parent = dirname(base);
+
+  while (parent !== base) {
+    base = parent;
+    parent = dirname(base);
+  }
+
   const traced = await nodeFileTrace([bundleFile], {
-    base: basePath,
+    base,
     cache: nftCache,
+    mixedModules: true,
   });
 
-  for (const file of traced.fileList) {
-    const source = join(basePath, file);
+  const files = Array.from(traced.fileList);
 
-    if (source == bundleFile) {
-      continue;
-    }
+  let commonParts = files[0]?.split(sep) ?? [];
 
-    const real = await realpath(source);
-    const dest = join(destPath, relative(basePath, source));
+  for (let i = 1; i < files.length; i += 1) {
+    const file = files[i];
+    const parts = file.split(sep);
 
-    if (copyParentModules.find((p) => real.endsWith(p))) {
-      const parent = join(real, "..");
-
-      for (const dir of (await readdir(parent)).filter((d) => !d.startsWith("."))) {
-        const realPath = await realpath(join(parent, dir));
-        const realDest = join(dest, "..", dir);
-
-        await cp(realPath, realDest, { recursive: true });
+    for (let j = 0; j < commonParts.length; j += 1) {
+      if (parts[j] !== commonParts[j]) {
+        commonParts = commonParts.slice(0, j);
+        break;
       }
-    } else {
-      await cp(real, dest, { recursive: true });
     }
   }
+
+  const ancestor = base + commonParts.join(sep);
+
+  for (const file of traced.fileList) {
+    const source = base + file;
+    const dest = join(destPath, relative(ancestor, source));
+
+    const stats = statSync(source);
+    const isDir = stats.isDirectory();
+
+    const real = await realpath(source);
+
+    try {
+      await mkdir(dirname(dest), { recursive: true });
+    } catch {
+      // do nothing
+    }
+
+    if (source !== real) {
+      const realDest = join(destPath, relative(ancestor, real));
+
+      try {
+        await symlink(relative(dirname(dest), realDest), dest, isDir ? "dir" : "file");
+      } catch {
+        // do nothing
+      }
+    } else if (!isDir) {
+      await cp(source, dest);
+    }
+  }
+
+  return relative(base + ancestor, bundleFile);
 };
