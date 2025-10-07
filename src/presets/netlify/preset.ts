@@ -49,9 +49,11 @@ export const netlifyPreset = (options: NetlifyPresetOptions): Preset => {
             buildBundleEnd: async (context, _buildPath, bundleId, bundleFile) => {
               console.log(`Coping Netlify function files for ${bundleId}...`);
 
-              const vercelFunctionDir = await createDir([context.netlifyFunctionDir, bundleId]);
-
-              const handleFile = await copyDependenciesToFunction(bundleFile, vercelFunctionDir, context.nftCache);
+              const handleFile = await copyDependenciesToFunction(
+                bundleFile,
+                await createDir([context.netlifyFunctionDir, bundleId], true),
+                context.nftCache,
+              );
 
               const serverRoutePath = context.serverRoutes.find((r) => r.bundleId == bundleId)?.path;
 

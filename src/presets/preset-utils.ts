@@ -1,8 +1,7 @@
 import type { BuildManifest } from "@react-router/dev/config";
 import { nodeFileTrace } from "@vercel/nft";
 import esbuild from "esbuild";
-import { statSync } from "node:fs";
-import { cp, mkdir, readFile, realpath, rm, symlink, writeFile } from "node:fs/promises";
+import { cp, mkdir, readFile, realpath, rm, stat, symlink, writeFile } from "node:fs/promises";
 import { dirname, join, relative, sep } from "node:path";
 import { exit } from "node:process";
 import type { PackageJson } from "type-fest";
@@ -62,10 +61,7 @@ export const buildPreset = async <BuildContext>({
   const serverBundles = buildManifest?.serverBundles ?? {
     site: {
       id: "site",
-      file: relative(
-        rootPath,
-        join(join(reactRouterConfig.buildDirectory, "server"), reactRouterConfig.serverBuildFile),
-      ),
+      file: relative(rootPath, join(reactRouterConfig.buildDirectory, "server", reactRouterConfig.serverBuildFile)),
     },
   };
 
@@ -91,7 +87,7 @@ export const buildPreset = async <BuildContext>({
       bundleLoader,
     );
 
-    buildBundleEnd?.(context, buildPath, bundleId, bundleFile, packageDeps);
+    await buildBundleEnd?.(context, buildPath, bundleId, bundleFile, packageDeps);
   }
 };
 
@@ -357,15 +353,13 @@ export const copyDependenciesToFunction = async (
     }
   }
 
-  const ancestor = base + commonParts.join(sep);
+  const ancestorPath = join(base, ...commonParts);
+  const ancestorDir = (await stat(ancestorPath)).isDirectory() ? ancestorPath : dirname(ancestorPath);
 
   for (const file of traced.fileList) {
     const source = base + file;
-    const dest = join(destPath, relative(ancestor, source));
-
-    const stats = statSync(source);
-    const isDir = stats.isDirectory();
-
+    const dest = join(destPath, relative(ancestorDir, source));
+    const isDir = (await stat(source)).isDirectory();
     const real = await realpath(source);
 
     try {
@@ -375,13 +369,11 @@ export const copyDependenciesToFunction = async (
     }
 
     if (source !== real) {
-      const realDest = join(destPath, relative(ancestor, real));
-
-      await symlink(relative(dirname(dest), realDest), dest, isDir ? "dir" : "file");
+      await symlink(relative(dirname(dest), join(destPath, relative(ancestorDir, real))), dest, isDir ? "dir" : "file");
     } else if (!isDir) {
       await cp(source, dest);
     }
   }
 
-  return relative(base + ancestor, bundleFile);
+  return relative(base + ancestorDir, bundleFile);
 };

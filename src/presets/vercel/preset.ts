@@ -47,7 +47,7 @@ export const vercelPreset = (options: VercelPresetOptions): Preset => {
             buildBundleEnd: async (context, buildPath, bundleId, bundleFile) => {
               console.log(`Coping Vercel function files for ${bundleId}...`);
 
-              const vercelFunctionDir = await createDir([context.vercelOutput, "functions", `_${bundleId}.func`]);
+              const vercelFunctionDir = await createDir([context.vercelOutput, "functions", `_${bundleId}.func`], true);
 
               const handleFile = await copyDependenciesToFunction(bundleFile, vercelFunctionDir, context.nftCache);
 
