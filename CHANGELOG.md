@@ -1,5 +1,11 @@
 # @resolid/react-router-hono
 
+## 2.0.2
+
+### Patch Changes
+
+- [`07c8169`](https://github.com/huijiewei/resolid-react-router-hono/commit/07c816992a91c7814f756b2096d7b43504a4e381) Thanks [@huijiewei](https://github.com/huijiewei)! - correctly handle single-file NFT copy
+
 ## 2.0.1
 
 ### Patch Changes
