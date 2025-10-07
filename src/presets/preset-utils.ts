@@ -377,11 +377,7 @@ export const copyDependenciesToFunction = async (
     if (source !== real) {
       const realDest = join(destPath, relative(ancestor, real));
 
-      try {
-        await symlink(relative(dirname(dest), realDest), dest, isDir ? "dir" : "file");
-      } catch {
-        // do nothing
-      }
+      await symlink(relative(dirname(dest), realDest), dest, isDir ? "dir" : "file");
     } else if (!isDir) {
       await cp(source, dest);
     }
