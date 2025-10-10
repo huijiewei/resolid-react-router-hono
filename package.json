@@ -65,13 +65,13 @@
     "minimatch": "^10.0.3"
   },
   "devDependencies": {
-    "@changesets/changelog-github": "^0.5.1",
     "@changesets/cli": "^2.29.7",
     "@commitlint/cli": "^20.1.0",
     "@commitlint/config-conventional": "^20.0.0",
-    "@netlify/types": "^2.0.3",
+    "@netlify/types": "^2.1.0",
     "@resolid/config": "^3.8.0",
-    "@types/node": "^22.18.8",
+    "@svitejs/changesets-changelog-github-compact": "^1.2.0",
+    "@types/node": "^22.18.9",
     "eslint": "^9.37.0",
     "lefthook": "^1.13.6",
     "prettier": "^3.6.2",
@@ -95,7 +95,7 @@
   "engines": {
     "node": "^20.19.0 || ^22.13.0 || >=24"
   },
-  "packageManager": "pnpm@10.18.1",
+  "packageManager": "pnpm@10.18.2",
   "homepage": "https://www.resolid.tech",
   "repository": {
     "type": "git",

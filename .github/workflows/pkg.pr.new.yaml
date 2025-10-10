@@ -33,6 +33,6 @@ jobs:
         run: pnpm run build
 
       - name: Publish
-        run: pnpm dlx pkg-pr-new publish --no-template --pnpm
+        run: pnpm dlx pkg-pr-new publish --no-template --pnpm --compact
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
