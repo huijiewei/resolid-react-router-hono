@@ -1,13 +1,7 @@
 import type { BuildManifest, Preset } from "@react-router/dev/config";
 import { cp, rm, writeFile } from "node:fs/promises";
 import { join } from "node:path";
-import {
-  buildPreset,
-  copyDependenciesToFunction,
-  createDir,
-  getServerRoutes,
-  type PresetBaseOptions,
-} from "../preset-utils";
+import { buildPreset, copyFilesToFunction, createDir, getServerRoutes, type PresetBaseOptions } from "../preset-utils";
 
 export type VercelPresetOptions = PresetBaseOptions & {
   regions: string[];
@@ -49,7 +43,7 @@ export const vercelPreset = (options: VercelPresetOptions): Preset => {
 
               const vercelFunctionDir = await createDir([context.vercelOutput, "functions", `_${bundleId}.func`], true);
 
-              const handleFile = await copyDependenciesToFunction(bundleFile, vercelFunctionDir, context.nftCache);
+              const handleFile = await copyFilesToFunction(bundleFile, vercelFunctionDir, context.nftCache);
 
               await writeFile(
                 join(vercelFunctionDir, ".vc-config.json"),

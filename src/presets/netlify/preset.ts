@@ -2,13 +2,7 @@ import type { Preset } from "@react-router/dev/config";
 import { writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { name, version } from "../../../package.json";
-import {
-  buildPreset,
-  copyDependenciesToFunction,
-  createDir,
-  getServerRoutes,
-  type PresetBaseOptions,
-} from "../preset-utils";
+import { buildPreset, copyFilesToFunction, createDir, getServerRoutes, type PresetBaseOptions } from "../preset-utils";
 
 export type NetlifyPresetOptions = PresetBaseOptions;
 
@@ -49,7 +43,7 @@ export const netlifyPreset = (options: NetlifyPresetOptions): Preset => {
             buildBundleEnd: async (context, _buildPath, bundleId, bundleFile) => {
               console.log(`Coping Netlify function files for ${bundleId}...`);
 
-              const handleFile = await copyDependenciesToFunction(
+              const handleFile = await copyFilesToFunction(
                 bundleFile,
                 await createDir([context.netlifyFunctionDir, bundleId], true),
                 context.nftCache,

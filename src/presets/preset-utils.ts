@@ -1,8 +1,8 @@
 import type { BuildManifest } from "@react-router/dev/config";
 import { nodeFileTrace } from "@vercel/nft";
 import esbuild from "esbuild";
-import { cp, mkdir, readFile, realpath, rm, stat, symlink, writeFile } from "node:fs/promises";
-import { dirname, join, relative, sep } from "node:path";
+import { cp, mkdir, readdir, readFile, realpath, rm, stat, symlink, writeFile } from "node:fs/promises";
+import { basename, dirname, join, relative, sep } from "node:path";
 import { exit } from "node:process";
 import type { PackageJson } from "type-fest";
 import type { ResolvedConfig } from "vite";
@@ -86,6 +86,9 @@ export const buildPreset = async <BuildContext>({
       nodeVersion,
       bundleLoader,
     );
+
+    await rm(join(dirname(buildFile), assetsDir), { force: true, recursive: true });
+    await rm(buildFile, { force: true });
 
     await buildBundleEnd?.(context, buildPath, bundleId, bundleFile, packageDeps);
   }
@@ -318,11 +321,7 @@ const getRoutePathsFromParentId = (routes: BuildManifest["routes"], parentId: st
 };
 
 // from: https://github.com/sveltejs/kit/blob/main/packages/adapter-vercel/index.js
-export const copyDependenciesToFunction = async (
-  bundleFile: string,
-  destPath: string,
-  nftCache: object,
-): Promise<string> => {
+export const copyFilesToFunction = async (bundleFile: string, destPath: string, nftCache: object): Promise<string> => {
   let base = bundleFile;
   let parent = dirname(base);
 
@@ -361,6 +360,15 @@ export const copyDependenciesToFunction = async (
     const dest = join(destPath, relative(ancestorDir, source));
     const isDir = (await stat(source)).isDirectory();
     const real = await realpath(source);
+
+    if (source == bundleFile) {
+      const sourcePath = dirname(bundleFile);
+      const destPath = dirname(dest);
+
+      for (const file of (await readdir(sourcePath)).filter((file) => file != basename(bundleFile))) {
+        await cp(join(sourcePath, file), join(destPath, file), { recursive: true });
+      }
+    }
 
     try {
       await mkdir(dirname(dest), { recursive: true });
