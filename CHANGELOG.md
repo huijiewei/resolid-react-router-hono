@@ -1,5 +1,11 @@
 # @resolid/react-router-hono
 
+## 2.0.3
+
+### Patch Changes
+
+- fix: copy build directory other files to serverless function ([`3c98f14`](https://github.com/huijiewei/resolid-react-router-hono/commit/3c98f143694184ae3977bece9936d140c409c7a9))
+
 ## 2.0.2
 
 ### Patch Changes
