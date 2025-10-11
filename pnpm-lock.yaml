@@ -33,7 +33,7 @@ importers:
         specifier: ^1.19.5
         version: 1.19.5(hono@4.9.10)
       '@react-router/dev':
-        specifier: ^7.9.3
+        specifier: ^7.9.4
         version: 7.9.4(@types/node@22.18.9)(@vitejs/plugin-rsc@0.4.11(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(vite@7.1.9(@types/node@22.18.9)(jiti@2.6.1)))(jiti@2.6.1)(react-router@7.9.4(react-dom@19.1.1(react@19.1.1))(react@19.1.1))(typescript@5.9.3)(vite@7.1.9(@types/node@22.18.9)(jiti@2.6.1))
       '@vercel/nft':
         specifier: ^0.30.2
@@ -48,7 +48,7 @@ importers:
         specifier: ^10.0.3
         version: 10.0.3
       react-router:
-        specifier: ^7.9.3
+        specifier: ^7.9.4
         version: 7.9.4(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
       vite:
         specifier: ^7.1.9
@@ -67,8 +67,8 @@ importers:
         specifier: ^2.1.0
         version: 2.1.0
       '@resolid/config':
-        specifier: ^3.8.0
-        version: 3.8.0(eslint@9.37.0(jiti@2.6.1))(prettier@3.6.2)(typescript@5.9.3)
+        specifier: ^3.9.0
+        version: 3.9.0(eslint@9.37.0(jiti@2.6.1))(prettier@3.6.2)(typescript@5.9.3)
       '@svitejs/changesets-changelog-github-compact':
         specifier: ^1.2.0
         version: 1.2.0
@@ -658,8 +658,8 @@ packages:
   '@mjackson/node-fetch-server@0.7.0':
     resolution: {integrity: sha512-un8diyEBKU3BTVj3GzlTPA1kIjCkGdD+AMYQy31Gf9JCkfoZzwgJ79GUtHrF2BN3XPNMLpubbzPcxys+a3uZEw==}
 
-  '@napi-rs/wasm-runtime@1.0.6':
-    resolution: {integrity: sha512-DXj75ewm11LIWUk198QSKUTxjyRjsBwk09MuMk5DGK+GDUtyPhhEHOGP/Xwwj3DjQXXkivoBirmOnKrLfc0+9g==}
+  '@napi-rs/wasm-runtime@1.0.7':
+    resolution: {integrity: sha512-SeDnOO0Tk7Okiq6DbXmmBODgOAb9dp9gjlphokTUxmt8U3liIP1ZsozBahH69j/RJv+Rfs6IwUKHTgQYJ/HBAw==}
 
   '@netlify/types@2.1.0':
     resolution: {integrity: sha512-ktUb5d58pt1lQGXO5E9S0F1ljM0g+CoQuGTVII0IxBc0apmPq5RI0o3OWLY7U3ZERRiYTg5UfjiMihBEzuZsuw==}
@@ -807,8 +807,8 @@ packages:
   '@remix-run/node-fetch-server@0.9.0':
     resolution: {integrity: sha512-SoLMv7dbH+njWzXnOY6fI08dFMI5+/dQ+vY3n8RnnbdG7MdJEgiP28Xj/xWlnRnED/aB6SFw56Zop+LbmaaKqA==}
 
-  '@resolid/config@3.8.0':
-    resolution: {integrity: sha512-+AAnaYoKmiDWfSwQ9vPl7gMPF0BFfqtgY7tF8skaqBcaa1rQTV6YXYoFwLFdpF0WZD/DddBAJR7Zr90n2OBxBw==}
+  '@resolid/config@3.9.0':
+    resolution: {integrity: sha512-eYHIykzXrXhFtOuNkXC6Kl/p9rZE45N1t6JwoaTkLz3LR5vBKMKgqse+8/Llj74rLcfw2uViIqQd3oT3hxhS3g==}
     engines: {node: ^20.19.0 || ^22.13.0 || >=24}
     peerDependencies:
       eslint: ^9.37.0
@@ -1540,8 +1540,8 @@ packages:
     peerDependencies:
       eslint: '>=8.23.0'
 
-  eslint-plugin-react-hooks@6.1.1:
-    resolution: {integrity: sha512-St9EKZzOAQF704nt2oJvAKZHjhrpg25ClQoaAlHmPZuajFldVLqRDW4VBNAS01NzeiQF0m0qhG1ZA807K6aVaQ==}
+  eslint-plugin-react-hooks@7.0.0:
+    resolution: {integrity: sha512-fNXaOwvKwq2+pXiRpXc825Vd63+KM4DLL40Rtlycb8m7fYpp6efrTp1sa6ZbP/Ap58K2bEKFXRmhURE+CJAQWw==}
     engines: {node: '>=18'}
     peerDependencies:
       eslint: ^3.0.0 || ^4.0.0 || ^5.0.0 || ^6.0.0 || ^7.0.0 || ^8.0.0-0 || ^9.0.0
@@ -1759,6 +1759,12 @@ packages:
   has-flag@4.0.0:
     resolution: {integrity: sha512-EykJT/Q1KjTWctppgIAgfSO0tKVuZUjhgMr17kqTumMl6Afv3EISleU7qZUzoXDFTAHTDC4NOoG/ZxU3EvlMPQ==}
     engines: {node: '>=8'}
+
+  hermes-estree@0.25.1:
+    resolution: {integrity: sha512-0wUoCcLp+5Ev5pDW2OriHC2MJCbwLwuRx+gAqMTOkGKJJiBCLjtrvy4PWUGn6MIVefecRpzoOZ/UV6iGdOr+Cw==}
+
+  hermes-parser@0.25.1:
+    resolution: {integrity: sha512-6pEjquH3rqaI6cYAXYPcz9MS4rY6R4ngRgrgfDshRptUZIc3lw0MCIJIGDj9++mfySOuPTHB4nrSW99BCvOPIA==}
 
   hono@4.9.10:
     resolution: {integrity: sha512-AlI15ijFyKTXR7eHo7QK7OR4RoKIedZvBuRjO8iy4zrxvlY5oFCdiRG/V/lFJHCNXJ0k72ATgnyzx8Yqa5arug==}
@@ -3528,7 +3534,7 @@ snapshots:
   '@mjackson/node-fetch-server@0.7.0':
     optional: true
 
-  '@napi-rs/wasm-runtime@1.0.6':
+  '@napi-rs/wasm-runtime@1.0.7':
     dependencies:
       '@emnapi/core': 1.5.0
       '@emnapi/runtime': 1.5.0
@@ -3710,14 +3716,14 @@ snapshots:
 
   '@remix-run/node-fetch-server@0.9.0': {}
 
-  '@resolid/config@3.8.0(eslint@9.37.0(jiti@2.6.1))(prettier@3.6.2)(typescript@5.9.3)':
+  '@resolid/config@3.9.0(eslint@9.37.0(jiti@2.6.1))(prettier@3.6.2)(typescript@5.9.3)':
     dependencies:
       '@eslint/js': 9.37.0
       eslint: 9.37.0(jiti@2.6.1)
       eslint-plugin-jsx-a11y: 6.10.2(eslint@9.37.0(jiti@2.6.1))
       eslint-plugin-n: 17.23.1(eslint@9.37.0(jiti@2.6.1))(typescript@5.9.3)
       eslint-plugin-react: 7.37.5(eslint@9.37.0(jiti@2.6.1))
-      eslint-plugin-react-hooks: 6.1.1(eslint@9.37.0(jiti@2.6.1))
+      eslint-plugin-react-hooks: 7.0.0(eslint@9.37.0(jiti@2.6.1))
       eslint-plugin-react-refresh: 0.4.23(eslint@9.37.0(jiti@2.6.1))
       globals: 16.4.0
       prettier: 3.6.2
@@ -3761,7 +3767,7 @@ snapshots:
 
   '@rolldown/binding-wasm32-wasi@1.0.0-beta.42':
     dependencies:
-      '@napi-rs/wasm-runtime': 1.0.6
+      '@napi-rs/wasm-runtime': 1.0.7
     optional: true
 
   '@rolldown/binding-win32-arm64-msvc@1.0.0-beta.42':
@@ -4416,11 +4422,12 @@ snapshots:
     transitivePeerDependencies:
       - typescript
 
-  eslint-plugin-react-hooks@6.1.1(eslint@9.37.0(jiti@2.6.1)):
+  eslint-plugin-react-hooks@7.0.0(eslint@9.37.0(jiti@2.6.1)):
     dependencies:
       '@babel/core': 7.28.4
       '@babel/parser': 7.28.4
       eslint: 9.37.0(jiti@2.6.1)
+      hermes-parser: 0.25.1
       zod: 4.1.12
       zod-validation-error: 4.0.2(zod@4.1.12)
     transitivePeerDependencies:
@@ -4672,6 +4679,12 @@ snapshots:
   graphemer@1.4.0: {}
 
   has-flag@4.0.0: {}
+
+  hermes-estree@0.25.1: {}
+
+  hermes-parser@0.25.1:
+    dependencies:
+      hermes-estree: 0.25.1
 
   hono@4.9.10: {}
 
