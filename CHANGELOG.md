@@ -1,5 +1,11 @@
 # @resolid/react-router-hono
 
+## 2.1.0
+
+### Minor Changes
+
+- support nodeVersion by platform ([`712a4cf`](https://github.com/huijiewei/resolid-react-router-hono/commit/712a4cf8b35bb5334da2a6b8b21d3f3b16d797f7))
+
 ## 2.0.3
 
 ### Patch Changes
