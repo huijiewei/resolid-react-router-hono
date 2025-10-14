@@ -1,6 +1,6 @@
 {
   "name": "@resolid/react-router-hono",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "type": "module",
   "sideEffects": false,
   "description": "React Router Hono Server",

@@ -1,5 +1,11 @@
 # @resolid/react-router-hono
 
+## 2.1.1
+
+### Patch Changes
+
+- fix release workflow ([`aef65d4`](https://github.com/huijiewei/resolid-react-router-hono/commit/aef65d4a8ab1f652e2894273e402455710f2a840))
+
 ## 2.1.0
 
 ### Minor Changes
