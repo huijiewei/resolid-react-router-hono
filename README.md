@@ -108,8 +108,6 @@ import { vercelPreset } from "@resolid/react-router-hono/vercel-preset";
 export default {
   presets: [
     vercelPreset({
-      // Deployment area
-      regions: ["sin1"],
       // Entry file
       entryFile: "server.vercel.ts", // default is server.ts
       nodeVersion: 22, // default is 22

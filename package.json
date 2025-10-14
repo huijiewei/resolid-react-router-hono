@@ -61,7 +61,7 @@
     "@hono/node-server": "^1.19.5",
     "@vercel/nft": "^0.30.2",
     "esbuild": "^0.25.10",
-    "hono": "^4.9.10",
+    "hono": "^4.9.12",
     "minimatch": "^10.0.3"
   },
   "devDependencies": {
@@ -71,18 +71,18 @@
     "@netlify/types": "^2.1.0",
     "@resolid/config": "^3.9.0",
     "@svitejs/changesets-changelog-github-compact": "^1.2.0",
-    "@types/node": "^22.18.9",
+    "@types/node": "^22.18.10",
     "eslint": "^9.37.0",
     "lefthook": "^1.13.6",
     "prettier": "^3.6.2",
     "prettier-plugin-organize-imports": "^4.3.0",
-    "tsdown": "^0.15.6",
-    "type-fest": "^5.0.1",
+    "tsdown": "^0.15.7",
+    "type-fest": "^5.1.0",
     "typescript": "^5.9.3",
     "vitest": "^3.2.4"
   },
   "peerDependencies": {
-    "@netlify/types": "^2.0.3",
+    "@netlify/types": "^2.1.0",
     "@react-router/dev": "^7.9.4",
     "react-router": "^7.9.4",
     "vite": "^7.1.9"

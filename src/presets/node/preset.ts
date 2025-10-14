@@ -1,7 +1,9 @@
 import type { Preset } from "@react-router/dev/config";
-import { buildPreset, type PresetBaseOptions } from "../preset-utils";
+import { buildPreset, type NodeVersions, type PresetBaseOptions } from "../preset-utils";
 
-export type NodePresetOptions = PresetBaseOptions;
+export type NodePresetOptions = PresetBaseOptions & {
+  nodeVersion: NodeVersions["node"];
+};
 
 // noinspection JSUnusedGlobalSymbols
 export const nodePreset = (options?: NodePresetOptions): Preset => {

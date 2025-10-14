@@ -2,9 +2,18 @@ import type { Preset } from "@react-router/dev/config";
 import { writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { name, version } from "../../../package.json";
-import { buildPreset, copyFilesToFunction, createDir, getServerRoutes, type PresetBaseOptions } from "../preset-utils";
+import {
+  buildPreset,
+  copyFilesToFunction,
+  createDir,
+  getServerRoutes,
+  type NodeVersions,
+  type PresetBaseOptions,
+} from "../preset-utils";
 
-export type NetlifyPresetOptions = PresetBaseOptions;
+export type NetlifyPresetOptions = PresetBaseOptions & {
+  nodeVersion?: NodeVersions["netlify"];
+};
 
 // noinspection JSUnusedGlobalSymbols
 export const netlifyPreset = (options: NetlifyPresetOptions): Preset => {

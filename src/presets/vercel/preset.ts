@@ -1,10 +1,17 @@
 import type { BuildManifest, Preset } from "@react-router/dev/config";
 import { cp, rm, writeFile } from "node:fs/promises";
 import { join } from "node:path";
-import { buildPreset, copyFilesToFunction, createDir, getServerRoutes, type PresetBaseOptions } from "../preset-utils";
+import {
+  buildPreset,
+  copyFilesToFunction,
+  createDir,
+  getServerRoutes,
+  type NodeVersions,
+  type PresetBaseOptions,
+} from "../preset-utils";
 
 export type VercelPresetOptions = PresetBaseOptions & {
-  regions: string[];
+  nodeVersion?: NodeVersions["vercel"];
 };
 
 // noinspection JSUnusedGlobalSymbols
@@ -53,7 +60,6 @@ export const vercelPreset = (options: VercelPresetOptions): Preset => {
                     runtime: `nodejs${nodeVersion}.x`,
                     launcherType: "Nodejs",
                     supportsResponseStreaming: true,
-                    regions: options.regions,
                   },
                   null,
                   2,

@@ -10,20 +10,26 @@ import type { ResolvedConfig } from "vite";
 type OptionalToUndefined<T> = {
   [K in keyof T]: T[K] | undefined;
 };
+
 type BundlerLoader = {
   [p: string]: esbuild.Loader;
 };
-type NodeVersion = 20 | 22;
+
+export type NodeVersions = {
+  node: 20 | 22 | 24;
+  vercel: 20 | 22;
+  netlify: 20 | 22;
+};
 
 export type PresetBaseOptions = {
   entryFile?: string;
-  nodeVersion?: NodeVersion;
   bundleLoader?: {
     [p: string]: esbuild.Loader;
   };
 };
 
 type BuildPresetOptions<BuildContext> = OptionalToUndefined<PresetBaseOptions> & {
+  nodeVersion?: NodeVersions["node"];
   buildManifest: BuildManifest | undefined;
   reactRouterConfig: Readonly<{
     appDirectory: string;
@@ -133,7 +139,7 @@ const writePackageJson = async (
   outputFile: string,
   packageJson: PackageJson,
   packageDeps: unknown,
-  nodeVersion: NodeVersion,
+  nodeVersion: NodeVersions["node"],
 ): Promise<void> => {
   const distPkg = {
     name: packageJson.name,
@@ -159,7 +165,7 @@ const buildBundle = async (
   assetsDir: string,
   serverBundleId: string,
   packageDeps: Record<string, string>,
-  nodeVersion: NodeVersion,
+  nodeVersion: NodeVersions["node"],
   bundleLoader: BundlerLoader,
 ): Promise<string> => {
   console.log(`Bundle file for ${serverBundleId}...`);

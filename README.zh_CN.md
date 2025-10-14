@@ -108,8 +108,6 @@ export default {
       // 入口文件
       entryFile: "server.vercel.ts", // 默认为 server.ts
       nodeVersion: 22, // 默认为 22
-      // 部署区域
-      regions: ["sin1"],
     }),
   ],
 } satisfies Config;
