@@ -1,10 +1,10 @@
 import { getRequestListener } from "@hono/node-server";
 import type { Config as ReactRouterConfig } from "@react-router/dev/config";
-import { minimatch } from "minimatch";
 import { existsSync, statSync } from "node:fs";
 import type http from "node:http";
 import { join, relative } from "node:path";
 import type { Connect, RunnableDevEnvironment, UserConfig, ViteDevServer, Plugin as VitePlugin } from "vite";
+import { createExcludePatterns, shouldExcludeUrl } from "./utils";
 
 type ReactRouterHonoServerOptions = {
   entryFile?: string;
@@ -76,30 +76,7 @@ export const reactRouterHonoServer = (options?: ReactRouterHonoServerOptions): V
         return;
       }
 
-      const mergedExclude = [
-        new RegExp(
-          `^(?=\\/${reactRouterConfig.appDir.replace(/^[/\\]+|[/\\]+$/g, "").replaceAll(/[/\\]+/g, "/")}\\/)((?!.*\\.data(\\?|$)).*\\..*(\\?.*)?$)`,
-        ),
-        new RegExp(
-          `^(?=\\/${
-            reactRouterConfig.appDir
-              .replace(/^[/\\]+|[/\\]+$/g, "")
-              .replaceAll(/[/\\]+/g, "/")
-              .split("/")[0]
-          }\\/)((?!.*\\.data(\\?|$)).*\\..*(\\?.*)?$)`,
-        ),
-        /\?import(\?.*)?$/,
-        /^\/@.+$/,
-        /^\/node_modules\/.*/,
-        `^(?=\\/${reactRouterConfig.appDir.replace(/^[/\\]+|[/\\]+$/g, "").replace(/[/\\]+/g, "/")}/**/.*/**)`,
-        `^(?=\\/${
-          reactRouterConfig.appDir
-            .replace(/^[/\\]+|[/\\]+$/g, "")
-            .replace(/[/\\]+/g, "/")
-            .split("/")[0]
-        }/**/.*/**)`,
-        ...(options?.exclude ?? []),
-      ];
+      const excludePatterns = createExcludePatterns(reactRouterConfig.appDir, options?.exclude);
 
       const createMiddleware =
         async (server: ViteDevServer): Promise<Connect.HandleFunction> =>
@@ -116,16 +93,8 @@ export const reactRouterHonoServer = (options?: ReactRouterHonoServerOptions): V
             }
           }
 
-          for (const pattern of mergedExclude) {
-            if (req.url) {
-              if (pattern instanceof RegExp) {
-                if (pattern.test(req.url)) {
-                  return next();
-                }
-              } else if (minimatch(req.url?.toString(), pattern)) {
-                return next();
-              }
-            }
+          if (req.url && shouldExcludeUrl(req.url, excludePatterns)) {
+            return next();
           }
 
           let app: null | { fetch: Fetch };

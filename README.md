@@ -2,7 +2,7 @@
 
 [简体中文](README.zh_CN.md)
 
-Resolid Remix extension package, mainly some plug-ins to enhance Remix and needs to be used with Vite
+Resolid React-Router extension package, mainly some plug-ins to enhance React-Router and needs to be used with Vite
 
 ## Feature
 
