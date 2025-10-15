@@ -1,5 +1,11 @@
 # @resolid/react-router-hono
 
+## 2.1.2
+
+### Patch Changes
+
+- improve performance of pattern matching ([`d1f5784`](https://github.com/huijiewei/resolid-react-router-hono/commit/d1f5784b4bc74dd31655f5d96654c437a9c76fdb))
+
 ## 2.1.1
 
 ### Patch Changes
