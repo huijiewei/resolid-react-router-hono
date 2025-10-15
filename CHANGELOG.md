@@ -1,5 +1,11 @@
 # @resolid/react-router-hono
 
+## 2.1.3
+
+### Patch Changes
+
+- fix Hono server option types for each platform ([`cd1508b`](https://github.com/huijiewei/resolid-react-router-hono/commit/cd1508b951ab1c8f7b810f3fd64af7cf326a813a))
+
 ## 2.1.2
 
 ### Patch Changes
