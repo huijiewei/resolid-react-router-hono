@@ -1,16 +1,15 @@
-import { serve } from "@hono/node-server";
+import { type Http2Bindings, type HttpBindings, serve } from "@hono/node-server";
 import { serveStatic } from "@hono/node-server/serve-static";
-import type { Env, Hono, MiddlewareHandler } from "hono";
+import type { Hono, MiddlewareHandler } from "hono";
 import { logger } from "hono/logger";
-import type { BlankEnv } from "hono/types";
 import type { AddressInfo } from "node:net";
 import { networkInterfaces } from "node:os";
 import { env } from "node:process";
 import { createHonoServer, type HonoServerOptions } from "../hono-server";
 
-export type { HonoServerOptions };
+type NodeEnv = { Bindings: HttpBindings | Http2Bindings };
 
-export type HonoNodeServerOptions<E extends Env = BlankEnv> = HonoServerOptions<E> & {
+export type HonoNodeServerOptions = HonoServerOptions<NodeEnv> & {
   port?: number;
   defaultLogger?: boolean;
   listeningListener?: (info: AddressInfo) => void;
@@ -34,13 +33,11 @@ export const cache =
   };
 
 // noinspection JSUnusedGlobalSymbols
-export const createHonoNodeServer = async <E extends Env = BlankEnv>(
-  options: HonoNodeServerOptions<E> = {},
-): Promise<Hono<E>> => {
+export const createHonoNodeServer = async (options: HonoNodeServerOptions = {}): Promise<Hono<NodeEnv>> => {
   const mode = env.NODE_ENV == "test" ? "development" : env.NODE_ENV;
   const isProduction = mode == "production";
 
-  const mergedOptions: HonoNodeServerOptions<E> = {
+  const mergedOptions: HonoNodeServerOptions = {
     ...{
       port: Number(env.PORT) || 3000,
       listeningListener: (info) => {

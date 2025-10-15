@@ -11,10 +11,6 @@ type OptionalToUndefined<T> = {
   [K in keyof T]: T[K] | undefined;
 };
 
-type BundlerLoader = {
-  [p: string]: esbuild.Loader;
-};
-
 export type NodeVersions = {
   node: 20 | 22 | 24;
   vercel: 20 | 22;
@@ -80,18 +76,60 @@ export const buildPreset = async <BuildContext>({
 
     await writePackageJson(join(buildPath, "package.json"), packageJson, packageDeps, nodeVersion);
 
-    const bundleFile = await buildBundle(
-      appPath,
-      entryFile,
-      buildPath,
-      buildFile,
-      buildDir,
-      assetsDir,
-      bundleId,
-      packageDeps,
-      nodeVersion,
-      bundleLoader,
-    );
+    console.log(`Bundle file for ${bundleId}...`);
+
+    const bundleFile = join(buildPath, "server.mjs");
+
+    await esbuild
+      .build({
+        outfile: bundleFile,
+        entryPoints: [join(appPath, entryFile)],
+        alias: {
+          "virtual:react-router/server-build": buildFile,
+        },
+        define: {
+          "process.env.NODE_ENV": JSON.stringify("production"),
+          "import.meta.env.NODE_ENV": JSON.stringify("production"),
+          "import.meta.env.RESOLID_BUILD_DIR": JSON.stringify(buildDir),
+          "import.meta.env.RESOLID_ASSETS_DIR": JSON.stringify(assetsDir),
+          ...viteConfig.define,
+        },
+        banner: { js: "import { createRequire } from 'module';const require = createRequire(import.meta.url);" },
+        platform: "node",
+        target: `node${nodeVersion}`,
+        format: "esm",
+        external: ["vite", ...Object.keys(packageDeps)],
+        bundle: true,
+        charset: "utf8",
+        legalComments: "none",
+        minify: false,
+        loader: {
+          ".aac": "file",
+          ".css": "file",
+          ".eot": "file",
+          ".flac": "file",
+          ".gif": "file",
+          ".jpeg": "file",
+          ".jpg": "file",
+          ".mp3": "file",
+          ".mp4": "file",
+          ".ogg": "file",
+          ".otf": "file",
+          ".png": "file",
+          ".svg": "file",
+          ".ttf": "file",
+          ".wav": "file",
+          ".webm": "file",
+          ".webp": "file",
+          ".woff": "file",
+          ".woff2": "file",
+          ...bundleLoader,
+        },
+      })
+      .catch((error: unknown) => {
+        console.error(error);
+        exit(1);
+      });
 
     await rm(join(dirname(buildFile), assetsDir), { force: true, recursive: true });
     await rm(buildFile, { force: true });
@@ -154,75 +192,6 @@ const writePackageJson = async (
   };
 
   await writeFile(outputFile, JSON.stringify(distPkg, null, 2), "utf8");
-};
-
-const buildBundle = async (
-  appPath: string,
-  entryFile: string,
-  buildPath: string,
-  buildFile: string,
-  buildDir: string,
-  assetsDir: string,
-  serverBundleId: string,
-  packageDeps: Record<string, string>,
-  nodeVersion: NodeVersions["node"],
-  bundleLoader: BundlerLoader,
-): Promise<string> => {
-  console.log(`Bundle file for ${serverBundleId}...`);
-
-  const bundleFile = join(buildPath, "server.mjs");
-
-  await esbuild
-    .build({
-      outfile: bundleFile,
-      entryPoints: [join(appPath, entryFile)],
-      alias: {
-        "virtual:react-router/server-build": buildFile,
-      },
-      define: {
-        "process.env.NODE_ENV": JSON.stringify("production"),
-        "import.meta.env.NODE_ENV": JSON.stringify("production"),
-        "import.meta.env.RESOLID_BUILD_DIR": JSON.stringify(buildDir),
-        "import.meta.env.RESOLID_ASSETS_DIR": JSON.stringify(assetsDir),
-      },
-      banner: { js: "import { createRequire } from 'module';const require = createRequire(import.meta.url);" },
-      platform: "node",
-      target: `node${nodeVersion}`,
-      format: "esm",
-      external: ["vite", ...Object.keys(packageDeps)],
-      bundle: true,
-      charset: "utf8",
-      legalComments: "none",
-      minify: false,
-      loader: {
-        ".aac": "file",
-        ".css": "file",
-        ".eot": "file",
-        ".flac": "file",
-        ".gif": "file",
-        ".jpeg": "file",
-        ".jpg": "file",
-        ".mp3": "file",
-        ".mp4": "file",
-        ".ogg": "file",
-        ".otf": "file",
-        ".png": "file",
-        ".svg": "file",
-        ".ttf": "file",
-        ".wav": "file",
-        ".webm": "file",
-        ".webp": "file",
-        ".woff": "file",
-        ".woff2": "file",
-        ...bundleLoader,
-      },
-    })
-    .catch((error: unknown) => {
-      console.error(error);
-      exit(1);
-    });
-
-  return bundleFile;
 };
 
 export const createDir = async (paths: string[], rmBefore: boolean = false): Promise<string> => {
