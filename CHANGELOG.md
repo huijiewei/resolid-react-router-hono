@@ -1,5 +1,11 @@
 # @resolid/react-router-hono
 
+## 2.1.6
+
+### Patch Changes
+
+- refactor: move @netlify/types to peerDependencies ([`51eec28`](https://github.com/huijiewei/resolid-react-router-hono/commit/51eec28e3ca95262268c8578991466aa3f1e62e6))
+
 ## 2.1.5
 
 ### Patch Changes
