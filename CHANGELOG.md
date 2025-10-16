@@ -1,5 +1,11 @@
 # @resolid/react-router-hono
 
+## 2.1.5
+
+### Patch Changes
+
+- fix: fix type export ([`c2750da`](https://github.com/huijiewei/resolid-react-router-hono/commit/c2750dac0292e2168940b8abfc324b5abd8ac05a))
+
 ## 2.1.4
 
 ### Patch Changes
