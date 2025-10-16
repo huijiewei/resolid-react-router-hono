@@ -66,6 +66,7 @@
   },
   "dependencies": {
     "@hono/node-server": "^1.19.5",
+    "@netlify/types": "^2.1.0",
     "@vercel/nft": "^0.30.2",
     "esbuild": "^0.25.11",
     "hono": "^4.9.12",
@@ -75,7 +76,6 @@
     "@changesets/cli": "^2.29.7",
     "@commitlint/cli": "^20.1.0",
     "@commitlint/config-conventional": "^20.0.0",
-    "@netlify/types": "^2.1.0",
     "@resolid/config": "^3.10.0",
     "@svitejs/changesets-changelog-github-compact": "^1.2.0",
     "@types/node": "^22.18.10",
