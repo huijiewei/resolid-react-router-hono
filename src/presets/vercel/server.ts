@@ -1,13 +1,11 @@
-import type { Http2Bindings, HttpBindings } from "@hono/node-server";
 import { handle } from "@hono/node-server/vercel";
 import type { IncomingMessage, ServerResponse } from "http";
 import type { Http2ServerRequest, Http2ServerResponse } from "http2";
 import { env } from "node:process";
+import type { NodeEnv } from "../../types";
 import { createHonoServer, type HonoServerOptions } from "../hono-server";
 
-type VercelEnv = { Bindings: HttpBindings | Http2Bindings };
-
-export type HonoVercelServerOptions = HonoServerOptions<VercelEnv>;
+export type HonoVercelServerOptions = HonoServerOptions<NodeEnv>;
 
 // noinspection JSUnusedGlobalSymbols
 export const createHonoVercelServer = async (
@@ -17,7 +15,7 @@ export const createHonoVercelServer = async (
 > => {
   const mode = env.NODE_ENV == "test" ? "development" : env.NODE_ENV;
 
-  const server = await createHonoServer<VercelEnv>(mode, {
+  const server = await createHonoServer<NodeEnv>(mode, {
     configure: options.configure,
     getLoadContext: options.getLoadContext,
     honoOptions: options.honoOptions,

@@ -1,11 +1,7 @@
 {
   "name": "@resolid/react-router-hono",
   "version": "2.1.3",
-  "type": "module",
-  "sideEffects": false,
   "description": "React Router Hono Server",
-  "author": "Huijie Wei",
-  "license": "MIT",
   "keywords": [
     "resolid",
     "react-router",
@@ -13,21 +9,20 @@
     "vercel",
     "netlify"
   ],
-  "publishConfig": {
-    "access": "public",
-    "provenance": true
+  "homepage": "https://www.resolid.tech",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/huijiewei/resolid-react-router-hono.git"
   },
-  "files": [
-    "dist"
-  ],
-  "scripts": {
-    "lint": "eslint .",
-    "format": "prettier --write .",
-    "build": "tsdown",
-    "test": "vitest run",
-    "typecheck": "tsc --noEmit"
-  },
+  "license": "MIT",
+  "author": "Huijie Wei",
+  "sideEffects": false,
+  "type": "module",
   "exports": {
+    ".": {
+      "types": "./dist/types.d.ts",
+      "import": "./dist/types.js"
+    },
     "./dev": {
       "types": "./dist/dev.d.ts",
       "import": "./dist/dev.js"
@@ -57,6 +52,18 @@
       "import": "./dist/vercel-preset.js"
     }
   },
+  "main": "./dist/types.js",
+  "types": "./dist/types.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsdown",
+    "format": "prettier --write .",
+    "lint": "eslint .",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
   "dependencies": {
     "@hono/node-server": "^1.19.5",
     "@vercel/nft": "^0.30.2",
@@ -69,7 +76,7 @@
     "@commitlint/cli": "^20.1.0",
     "@commitlint/config-conventional": "^20.0.0",
     "@netlify/types": "^2.1.0",
-    "@resolid/config": "^3.9.1",
+    "@resolid/config": "^3.10.0",
     "@svitejs/changesets-changelog-github-compact": "^1.2.0",
     "@types/node": "^22.18.10",
     "eslint": "^9.37.0",
@@ -81,31 +88,25 @@
     "vitest": "^3.2.4"
   },
   "peerDependencies": {
-    "@netlify/types": "^2.1.0",
     "@react-router/dev": "^7.9.4",
     "react-router": "^7.9.4",
-    "vite": "^7.1.9"
+    "vite": "^7.1.10"
   },
-  "peerDependenciesMeta": {
-    "@netlify/types": {
-      "optional": true
-    }
-  },
+  "peerDependenciesMeta": {},
+  "packageManager": "pnpm@10.18.2",
   "engines": {
     "node": "^20.19.0 || ^22.13.0 || >=24"
   },
-  "packageManager": "pnpm@10.18.2",
-  "homepage": "https://www.resolid.tech",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/huijiewei/resolid-react-router-hono.git"
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
   },
   "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild",
+      "lefthook"
+    ],
     "overrides": {
-      "safer-buffer": "npm:@nolyfill/safer-buffer@^1",
-      "is-core-module": "npm:@nolyfill/is-core-module@^1",
-      "isarray": "npm:@nolyfill/isarray@^1",
-      "safe-buffer": "npm:@nolyfill/safe-buffer@^1",
       "array-includes": "npm:@nolyfill/array-includes@^1",
       "array.prototype.findlast": "npm:@nolyfill/array.prototype.findlast@^1",
       "array.prototype.flat": "npm:@nolyfill/array.prototype.flat@^1",
@@ -113,18 +114,18 @@
       "array.prototype.tosorted": "npm:@nolyfill/array.prototype.tosorted@^1",
       "es-iterator-helpers": "npm:@nolyfill/es-iterator-helpers@^1",
       "hasown": "npm:@nolyfill/hasown@^1",
+      "is-core-module": "npm:@nolyfill/is-core-module@^1",
+      "isarray": "npm:@nolyfill/isarray@^1",
       "object.assign": "npm:@nolyfill/object.assign@^1",
       "object.entries": "npm:@nolyfill/object.entries@^1",
       "object.fromentries": "npm:@nolyfill/object.fromentries@^1",
       "object.values": "npm:@nolyfill/object.values@^1",
+      "safe-buffer": "npm:@nolyfill/safe-buffer@^1",
       "safe-regex-test": "npm:@nolyfill/safe-regex-test@^1",
+      "safer-buffer": "npm:@nolyfill/safer-buffer@^1",
       "string.prototype.includes": "npm:@nolyfill/string.prototype.includes@^1",
       "string.prototype.matchall": "npm:@nolyfill/string.prototype.matchall@^1",
       "string.prototype.repeat": "npm:@nolyfill/string.prototype.repeat@^1"
-    },
-    "onlyBuiltDependencies": [
-      "esbuild",
-      "lefthook"
-    ]
+    }
   }
 }

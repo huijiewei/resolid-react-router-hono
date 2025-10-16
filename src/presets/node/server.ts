@@ -1,13 +1,12 @@
-import { type Http2Bindings, type HttpBindings, serve } from "@hono/node-server";
+import { serve } from "@hono/node-server";
 import { serveStatic } from "@hono/node-server/serve-static";
 import type { Hono, MiddlewareHandler } from "hono";
 import { logger } from "hono/logger";
 import type { AddressInfo } from "node:net";
 import { networkInterfaces } from "node:os";
 import { env } from "node:process";
+import type { NodeEnv } from "../../types";
 import { createHonoServer, type HonoServerOptions } from "../hono-server";
-
-type NodeEnv = { Bindings: HttpBindings | Http2Bindings };
 
 export type HonoNodeServerOptions = HonoServerOptions<NodeEnv> & {
   port?: number;

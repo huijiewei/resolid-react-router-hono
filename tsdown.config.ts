@@ -3,6 +3,7 @@ import { defineConfig, type UserConfig } from "tsdown";
 export default defineConfig({
   entry: {
     dev: "src/dev/index.ts",
+    types: "src/types/index.ts",
     "node-server": "src/presets/node/server.ts",
     "node-preset": "src/presets/node/preset.ts",
     "netlify-server": "src/presets/netlify/server.ts",

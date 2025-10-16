@@ -9,7 +9,7 @@ import {
   type UNSAFE_MiddlewareEnabled,
 } from "react-router";
 
-export type ReactRouterAppLoadContext = UNSAFE_MiddlewareEnabled extends true ? RouterContextProvider : AppLoadContext;
+type ReactRouterAppLoadContext = UNSAFE_MiddlewareEnabled extends true ? RouterContextProvider : AppLoadContext;
 
 export type HonoServerOptions<E extends Env = BlankEnv> = {
   configure?: <E extends Env = BlankEnv>(app: Hono<E>) => Promise<void> | void;
