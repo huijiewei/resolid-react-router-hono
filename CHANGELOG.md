@@ -1,5 +1,11 @@
 # @resolid/react-router-hono
 
+## 2.1.4
+
+### Patch Changes
+
+- refactor: optimize type exports ([`6d56ef3`](https://github.com/huijiewei/resolid-react-router-hono/commit/6d56ef382741f532854a8e19a1087a2a5f8e4c63))
+
 ## 2.1.3
 
 ### Patch Changes
