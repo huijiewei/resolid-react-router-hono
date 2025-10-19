@@ -1,5 +1,11 @@
 # @resolid/react-router-hono
 
+## 2.2.0
+
+### Minor Changes
+
+- feat: add includeFiles option to react-router platform preset ([`95d416e`](https://github.com/huijiewei/resolid-react-router-hono/commit/95d416e3f2ffb4985d54cc7a7da699d1f6908b71))
+
 ## 2.1.6
 
 ### Patch Changes
