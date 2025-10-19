@@ -1,11 +1,12 @@
 import type { BuildManifest } from "@react-router/dev/config";
-import { nodeFileTrace } from "@vercel/nft";
 import esbuild from "esbuild";
+import fg from "fast-glob";
+import { existsSync } from "node:fs";
 import { cp, mkdir, readdir, readFile, realpath, rm, stat, symlink, writeFile } from "node:fs/promises";
-import { basename, dirname, join, relative, sep } from "node:path";
+import { basename, dirname, join, relative } from "node:path";
 import { exit } from "node:process";
 import type { PackageJson } from "type-fest";
-import type { ResolvedConfig } from "vite";
+import { type ResolvedConfig, searchForWorkspaceRoot } from "vite";
 
 type OptionalToUndefined<T> = {
   [K in keyof T]: T[K] | undefined;
@@ -19,13 +20,14 @@ export type NodeVersions = {
 
 export type PresetBaseOptions = {
   entryFile?: string;
+  includeFiles?: string[];
   bundleLoader?: {
     [p: string]: esbuild.Loader;
   };
 };
 
 type BuildPresetOptions<BuildContext> = OptionalToUndefined<PresetBaseOptions> & {
-  nodeVersion?: NodeVersions["node"];
+  nodeVersion: NodeVersions["node"];
   buildManifest: BuildManifest | undefined;
   reactRouterConfig: Readonly<{
     appDirectory: string;
@@ -45,6 +47,7 @@ type BuildPresetOptions<BuildContext> = OptionalToUndefined<PresetBaseOptions> &
 
 export const buildPreset = async <BuildContext>({
   entryFile = "server.ts",
+  includeFiles = [],
   nodeVersion = 22,
   bundleLoader = {},
   buildManifest,
@@ -59,13 +62,16 @@ export const buildPreset = async <BuildContext>({
   const assetsDir = viteConfig.build.assetsDir ?? "assets";
   const packageJson = JSON.parse(await readFile(join(rootPath, "package.json"), "utf8")) as PackageJson;
   const packageDeps = getPackageDependencies({ ...packageJson.dependencies }, viteConfig.ssr.external);
+  const serverBuildPath = join(reactRouterConfig.buildDirectory, "server");
 
   const serverBundles = buildManifest?.serverBundles ?? {
     site: {
       id: "site",
-      file: relative(rootPath, join(reactRouterConfig.buildDirectory, "server", reactRouterConfig.serverBuildFile)),
+      file: relative(rootPath, join(serverBuildPath, reactRouterConfig.serverBuildFile)),
     },
   };
+
+  const matchedFiles = includeFiles?.length > 0 ? await fg(includeFiles, { cwd: rootPath }) : [];
 
   const context = await buildStart();
 
@@ -133,6 +139,10 @@ export const buildPreset = async <BuildContext>({
 
     await rm(join(dirname(buildFile), assetsDir), { force: true, recursive: true });
     await rm(buildFile, { force: true });
+
+    for (const file of matchedFiles) {
+      await cp(file, join(serverBuildPath, file), { recursive: true });
+    }
 
     await buildBundleEnd?.(context, buildPath, bundleId, bundleFile, packageDeps);
   }
@@ -297,66 +307,55 @@ const getRoutePathsFromParentId = (routes: BuildManifest["routes"], parentId: st
 
 // from: https://github.com/sveltejs/kit/blob/main/packages/adapter-vercel/index.js
 export const copyFilesToFunction = async (bundleFile: string, destPath: string, nftCache: object): Promise<string> => {
-  let base = bundleFile;
-  let parent = dirname(base);
+  const base = searchForWorkspaceRoot(bundleFile);
 
-  while (parent !== base) {
-    base = parent;
-    parent = dirname(base);
-  }
+  const { nodeFileTrace } = await import("@vercel/nft");
 
   const traced = await nodeFileTrace([bundleFile], {
     base,
     cache: nftCache,
-    mixedModules: true,
   });
 
-  const files = Array.from(traced.fileList);
+  const fileList = Array.from(traced.fileList).map((file) => join(base, file));
 
-  let commonParts = files[0]?.split(sep) ?? [];
+  let ancestorDir = dirname(fileList[0]);
 
-  for (let i = 1; i < files.length; i += 1) {
-    const file = files[i];
-    const parts = file.split(sep);
-
-    for (let j = 0; j < commonParts.length; j += 1) {
-      if (parts[j] !== commonParts[j]) {
-        commonParts = commonParts.slice(0, j);
-        break;
-      }
+  for (const file of fileList.slice(1)) {
+    while (!file.startsWith(ancestorDir)) {
+      ancestorDir = dirname(ancestorDir);
     }
   }
 
-  const ancestorPath = join(base, ...commonParts);
-  const ancestorDir = (await stat(ancestorPath)).isDirectory() ? ancestorPath : dirname(ancestorPath);
+  for (const origin of fileList) {
+    const dest = join(destPath, relative(ancestorDir, origin));
+    const real = await realpath(origin);
 
-  for (const file of traced.fileList) {
-    const source = base + file;
-    const dest = join(destPath, relative(ancestorDir, source));
-    const isDir = (await stat(source)).isDirectory();
-    const real = await realpath(source);
+    const isSymlink = real !== origin;
+    const isDirectory = (await stat(origin)).isDirectory();
 
-    if (source == bundleFile) {
-      const sourcePath = dirname(bundleFile);
-      const destPath = dirname(dest);
+    await mkdir(dirname(dest), { recursive: true });
 
-      for (const file of (await readdir(sourcePath)).filter((file) => file != basename(bundleFile))) {
-        await cp(join(sourcePath, file), join(destPath, file), { recursive: true });
+    if (origin == bundleFile) {
+      const sourceDir = dirname(bundleFile);
+      const destDir = dirname(dest);
+
+      for (const file of (await readdir(sourceDir)).filter((file) => file != basename(bundleFile))) {
+        await cp(join(sourceDir, file), join(destDir, file), { recursive: true });
       }
     }
 
-    try {
-      await mkdir(dirname(dest), { recursive: true });
-    } catch {
-      // do nothing
-    }
-
-    if (source !== real) {
-      await symlink(relative(dirname(dest), join(destPath, relative(ancestorDir, real))), dest, isDir ? "dir" : "file");
-    } else if (!isDir) {
-      await cp(source, dest);
+    if (isSymlink) {
+      if (!existsSync(dest)) {
+        await symlink(
+          relative(dirname(dest), join(destPath, relative(ancestorDir, real))),
+          dest,
+          isDirectory ? "dir" : "file",
+        );
+      }
+    } else if (!isDirectory) {
+      await cp(origin, dest);
     }
   }
 
-  return relative(base + ancestorDir, bundleFile);
+  return relative(ancestorDir, bundleFile);
 };

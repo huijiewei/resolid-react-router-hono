@@ -7,6 +7,8 @@ export type NodePresetOptions = PresetBaseOptions & {
 
 // noinspection JSUnusedGlobalSymbols
 export const nodePreset = (options?: NodePresetOptions): Preset => {
+  const nodeVersion = options?.nodeVersion ?? 22;
+
   // noinspection JSUnusedGlobalSymbols
   return {
     name: "@resolid/react-router-hono-node-preset",
@@ -15,7 +17,8 @@ export const nodePreset = (options?: NodePresetOptions): Preset => {
         buildEnd: async ({ buildManifest, reactRouterConfig, viteConfig }) => {
           await buildPreset({
             entryFile: options?.entryFile,
-            nodeVersion: options?.nodeVersion,
+            includeFiles: options?.includeFiles,
+            nodeVersion,
             bundleLoader: options?.bundleLoader,
             buildManifest,
             reactRouterConfig,

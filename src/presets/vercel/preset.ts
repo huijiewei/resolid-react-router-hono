@@ -15,8 +15,8 @@ export type VercelPresetOptions = PresetBaseOptions & {
 };
 
 // noinspection JSUnusedGlobalSymbols
-export const vercelPreset = (options: VercelPresetOptions): Preset => {
-  const nodeVersion = options.nodeVersion ?? 22;
+export const vercelPreset = (options?: VercelPresetOptions): Preset => {
+  const nodeVersion = options?.nodeVersion ?? 22;
 
   // noinspection JSUnusedGlobalSymbols
   return {
@@ -26,6 +26,7 @@ export const vercelPreset = (options: VercelPresetOptions): Preset => {
         buildEnd: async ({ buildManifest, reactRouterConfig, viteConfig }) => {
           await buildPreset<{ vercelOutput: string; nftCache: object }>({
             entryFile: options?.entryFile,
+            includeFiles: options?.includeFiles,
             nodeVersion,
             bundleLoader: options?.bundleLoader,
             buildManifest,

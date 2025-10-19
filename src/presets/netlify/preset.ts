@@ -16,8 +16,8 @@ export type NetlifyPresetOptions = PresetBaseOptions & {
 };
 
 // noinspection JSUnusedGlobalSymbols
-export const netlifyPreset = (options: NetlifyPresetOptions): Preset => {
-  const nodeVersion = options.nodeVersion ?? 22;
+export const netlifyPreset = (options?: NetlifyPresetOptions): Preset => {
+  const nodeVersion = options?.nodeVersion ?? 22;
 
   return {
     name: "@resolid/react-router-hono-netlify-preset",
@@ -30,7 +30,8 @@ export const netlifyPreset = (options: NetlifyPresetOptions): Preset => {
             serverRoutes: { path: string; bundleId: string }[];
             nftCache: object;
           }>({
-            entryFile: options.entryFile,
+            entryFile: options?.entryFile,
+            includeFiles: options?.includeFiles,
             nodeVersion,
             bundleLoader: options?.bundleLoader,
             buildManifest: buildManifest,
