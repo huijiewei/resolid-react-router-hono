@@ -270,7 +270,7 @@ export const getServerRoutes = (
     }
 
     const result = Object.values(bundleRoutes).map((route) => {
-      return { path: route.path.slice(0, -1), bundleId: route.bundleId };
+      return { path: route.path.endsWith("/") ? route.path.slice(0, -1) : route.path, bundleId: route.bundleId };
     });
 
     result.sort((a, b) => (a.path.length > b.path.length ? -1 : 1));

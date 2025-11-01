@@ -65,12 +65,12 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@hono/node-server": "^1.19.5",
+    "@hono/node-server": "^1.19.6",
     "@vercel/nft": "^0.30.3",
     "esbuild": "^0.25.11",
     "fast-glob": "^3.3.3",
-    "hono": "^4.10.1",
-    "minimatch": "^10.0.3"
+    "hono": "^4.10.4",
+    "minimatch": "^10.1.1"
   },
   "devDependencies": {
     "@changesets/cli": "^2.29.7",
@@ -78,23 +78,23 @@
     "@commitlint/config-conventional": "^20.0.0",
     "@resolid/config": "^3.10.2",
     "@svitejs/changesets-changelog-github-compact": "^1.2.0",
-    "@types/node": "^22.18.11",
-    "eslint": "^9.38.0",
-    "lefthook": "^1.13.6",
+    "@types/node": "^22.18.13",
+    "eslint": "^9.39.0",
+    "lefthook": "^2.0.2",
     "prettier": "^3.6.2",
-    "tsdown": "^0.15.8",
+    "tsdown": "^0.15.12",
     "type-fest": "^5.1.0",
     "typescript": "^5.9.3",
-    "vitest": "^3.2.4"
+    "vitest": "^4.0.6"
   },
   "peerDependencies": {
     "@netlify/types": "^2.1.0",
-    "@react-router/dev": "^7.9.4",
-    "react-router": "^7.9.4",
-    "vite": "^7.1.10"
+    "@react-router/dev": "^7.9.5",
+    "react-router": "^7.9.5",
+    "vite": "^7.1.12"
   },
   "peerDependenciesMeta": {},
-  "packageManager": "pnpm@10.18.2",
+  "packageManager": "pnpm@10.20.0",
   "engines": {
     "node": "^20.19.0 || ^22.13.0 || >=24"
   },
