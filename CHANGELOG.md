@@ -1,5 +1,11 @@
 # @resolid/react-router-hono
 
+## 2.2.1
+
+### Patch Changes
+
+- fix: fix generate route path ([`bd7fb78`](https://github.com/huijiewei/resolid-react-router-hono/commit/bd7fb78a33b00dd3216bca3267c40ab8e858d965))
+
 ## 2.2.0
 
 ### Minor Changes
