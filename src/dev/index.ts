@@ -100,7 +100,7 @@ export const reactRouterHonoServer = (options?: ReactRouterHonoServerOptions): V
           let app: null | { fetch: Fetch };
           const entry = reactRouterConfig!.entryFile;
 
-          if (reactRouterConfig!.feature.unstable_viteEnvironmentApi) {
+          if (reactRouterConfig!.feature.v8_viteEnvironmentApi) {
             app = (await (server.environments.ssr as RunnableDevEnvironment).runner.import(entry))["default"];
           } else {
             app = (await server.ssrLoadModule(entry))["default"];

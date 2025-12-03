@@ -50,7 +50,7 @@ export const netlifyPreset = (options?: NetlifyPresetOptions): Preset => {
 
               return { netlifyRoot, netlifyFunctionDir, serverRoutes, nftCache: {} };
             },
-            buildBundleEnd: async (context, _buildPath, bundleId, bundleFile) => {
+            buildBundleEnd: async (context, bundleId, bundleFile) => {
               console.log(`Coping Netlify function files for ${bundleId}...`);
 
               const handleFile = await copyFilesToFunction(

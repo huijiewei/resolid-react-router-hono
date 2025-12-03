@@ -14,7 +14,7 @@ type OptionalToUndefined<T> = {
 
 export type NodeVersions = {
   node: 20 | 22 | 24;
-  vercel: 20 | 22;
+  vercel: 20 | 22 | 24;
   netlify: 20 | 22;
 };
 
@@ -38,7 +38,6 @@ type BuildPresetOptions<BuildContext> = OptionalToUndefined<PresetBaseOptions> &
   buildStart: () => Promise<BuildContext>;
   buildBundleEnd?: (
     context: BuildContext,
-    buildPath: string,
     bundleId: string,
     bundleFile: string,
     packageDeps: Record<string, string>,
@@ -144,7 +143,7 @@ export const buildPreset = async <BuildContext>({
       await cp(file, join(serverBuildPath, file), { recursive: true });
     }
 
-    await buildBundleEnd?.(context, buildPath, bundleId, bundleFile, packageDeps);
+    await buildBundleEnd?.(context, bundleId, bundleFile, packageDeps);
   }
 };
 

@@ -46,7 +46,7 @@ export const vercelPreset = (options?: VercelPresetOptions): Preset => {
 
               return { vercelOutput, nftCache: {} };
             },
-            buildBundleEnd: async (context, buildPath, bundleId, bundleFile) => {
+            buildBundleEnd: async (context, bundleId, bundleFile) => {
               console.log(`Coping Vercel function files for ${bundleId}...`);
 
               const vercelFunctionDir = await createDir([context.vercelOutput, "functions", `_${bundleId}.func`], true);
