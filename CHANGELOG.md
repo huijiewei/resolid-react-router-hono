@@ -1,5 +1,11 @@
 # @resolid/react-router-hono
 
+## 2.3.1
+
+### Patch Changes
+
+- fix: fix exports ([`284db75`](https://github.com/huijiewei/resolid-react-router-hono/commit/284db7536f1d83c3f428cf80a02919dd4c324a4e))
+
 ## 2.3.0
 
 ### Minor Changes
