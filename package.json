@@ -20,40 +20,40 @@
   "type": "module",
   "exports": {
     ".": {
-      "types": "./dist/types.d.ts",
-      "import": "./dist/types.js"
+      "types": "./dist/types.d.mts",
+      "import": "./dist/types.mjs"
     },
     "./dev": {
-      "types": "./dist/dev.d.ts",
-      "import": "./dist/dev.js"
+      "types": "./dist/dev.d.mts",
+      "import": "./dist/dev.mjs"
     },
     "./node-server": {
-      "types": "./dist/node-server.d.ts",
-      "import": "./dist/node-server.js"
+      "types": "./dist/node-server.d.mts",
+      "import": "./dist/node-server.mjs"
     },
     "./node-preset": {
-      "types": "./dist/node-preset.d.ts",
-      "import": "./dist/node-preset.js"
+      "types": "./dist/node-preset.d.mts",
+      "import": "./dist/node-preset.mjs"
     },
     "./netlify-server": {
-      "types": "./dist/netlify-server.d.ts",
-      "import": "./dist/netlify-server.js"
+      "types": "./dist/netlify-server.d.mts",
+      "import": "./dist/netlify-server.mjs"
     },
     "./netlify-preset": {
-      "types": "./dist/netlify-preset.d.ts",
-      "import": "./dist/netlify-preset.js"
+      "types": "./dist/netlify-preset.d.mts",
+      "import": "./dist/netlify-preset.mjs"
     },
     "./vercel-server": {
-      "types": "./dist/vercel-server.d.ts",
-      "import": "./dist/vercel-server.js"
+      "types": "./dist/vercel-server.d.mts",
+      "import": "./dist/vercel-server.mjs"
     },
     "./vercel-preset": {
-      "types": "./dist/vercel-preset.d.ts",
-      "import": "./dist/vercel-preset.js"
+      "types": "./dist/vercel-preset.d.mts",
+      "import": "./dist/vercel-preset.mjs"
     }
   },
-  "main": "./dist/types.js",
-  "types": "./dist/types.d.ts",
+  "main": "./dist/types.mjs",
+  "types": "./dist/types.d.mts",
   "files": [
     "dist"
   ],
