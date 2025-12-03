@@ -1,5 +1,11 @@
 # @resolid/react-router-hono
 
+## 2.3.0
+
+### Minor Changes
+
+- feat: rename viteEnvironmentApi flag and add Vercel Node 24 support ([`19bdcc2`](https://github.com/huijiewei/resolid-react-router-hono/commit/19bdcc2d2b8615f61125c0c16616da29cb721a7b))
+
 ## 2.2.1
 
 ### Patch Changes
