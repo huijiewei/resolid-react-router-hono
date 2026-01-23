@@ -1,5 +1,5 @@
 {
-  "extends": "@resolid/config/tsconfig/base",
+  "extends": "@resolid/config/tsconfig/base.json",
   "include": ["src/**/*", "tests/**/*", "tsdown.config.ts", "vitest.config.ts"],
   "compilerOptions": {
     "allowJs": false,
